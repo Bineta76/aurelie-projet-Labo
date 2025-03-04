@@ -3,8 +3,9 @@
     <div class="container mt-5">
         <div class="topnav">
             <a href="index.php" aria-label="Accueil">Accueil</a>
-            <a class="active" href="inscription.php" aria-label="Inscription">Inscription</a>
+            <a href="inscription.php" aria-label="Inscription">Inscription</a>
             <a href="quiSommesNous.php" aria-label="Qui sommes-nous ?">Qui sommes-nous?</a>
+            <a class="active"href="dossierpatient" aria-label="dossierpatient">Dossier patient</a>
             <a href="carte.php" aria-label="Nous contacter">Gestion des utilisateurs</a>
             <a href="rdv.php" aria-label="Créer un rendez-vous">Créer un rendez-vous</a>
             <a href="planningmedecin.php" aria-label="Voir le planning du médecin">Planning</a>
@@ -12,7 +13,7 @@
             <a href="contactSupport.php" aria-label="contactSupport">Aide </a> 
         </div>
         <h2 class="text-center">Inscription</h2>
-        <form method="POST" action="inscript.php">
+        <form method="POST" action="dossierpatient.php">
             <div class="form-group">
                 <label for="nom">Nom :</label>
                 <input type="text" id="nom" name="nom" class="form-control" required>
