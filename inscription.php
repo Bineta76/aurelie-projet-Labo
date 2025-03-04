@@ -3,9 +3,9 @@
     <div class="container mt-5">
         <div class="topnav">
             <a href="index.php" aria-label="Accueil">Accueil</a>
-            <a href="inscription.php" aria-label="Inscription">Inscription</a>
+            <a class="active"href="inscription.php" aria-label="Inscription">Inscription</a>
             <a href="quiSommesNous.php" aria-label="Qui sommes-nous ?">Qui sommes-nous?</a>
-            <a class="active"href="dossierpatient" aria-label="dossierpatient">Dossier patient</a>
+            <a href="dossierpatient" aria-label="dossierpatient">Dossier patient</a>
             <a href="rdv.php" aria-label="Créer un rendez-vous">Créer un rendez-vous</a>
             <a href="planningmedecin.php" aria-label="Voir le planning du médecin">Planning</a>
             <a href="centre.php" aria-label="Voir la liste des centres disponibles">Liste des centres</a>
