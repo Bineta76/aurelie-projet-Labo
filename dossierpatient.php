@@ -15,12 +15,7 @@
             </a>
         </div>  
 
-
-
-
-
-
-    <label for="nom">Nom :</label>
+  <label for="nom">Nom :</label>
                 <input type="text" id="nom" name="nom" class="form-control" required>
             </div>
             <div class="form-group">
