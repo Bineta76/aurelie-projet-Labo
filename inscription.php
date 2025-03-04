@@ -11,8 +11,11 @@
             <a href="centre.php" aria-label="Voir la liste des centres disponibles">Liste des centres</a>
             <a href="contactSupport.php" aria-label="contactSupport">Aide </a> 
         </div>
+
+
+
         <h2 class="text-center">Inscription</h2>
-        <form method="POST" action="dossierpatient.php">
+        <form method="POST" action="inscription.php">
             <div class="form-group">
                 <label for="nom">Nom :</label>
                 <input type="text" id="nom" name="nom" class="form-control" required>
