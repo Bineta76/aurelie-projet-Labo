@@ -1,6 +1,7 @@
 <?php include 'includes/header.php';?>
 
-
+<div class="container">
+        <div class="topnav">
 <a href="inscription.php" aria-label="Inscription">Inscription</a>
             <a href="quiSommesNous.php" aria-label="Qui sommes-nous ?">Qui sommes-nous?</a>
             <a href="dossierpatient.php" aria-label="dossierpatient.php">Dossier patient</a>
@@ -13,16 +14,14 @@
             </a>
         </div>   
             
-    </div>
-
-    <h3>Laboratoires disponibles</h3> 
-
-        <img src="assets/images/labo.jpg "width="900px"heignt='200px'>
-        <img src="assets/images/bordeaux.jpg "width="400px"heignt='200px'>
-        <img src="assets/images/cliniqueduparc.jpg "width="400px"heignt='200px'>
-        <img src="assets/images/hopitalcentral.jpg "width="400px"heignt='200px'>
-        <img src="assets/images/lille.jpg "width="400px"heignt='200px'>
-        <img src="assets/images/roubaix.jpg "width="400px"heignt='200px'>
-
-    <?php include 'includes/footer.php';?>
+    
 </div>
+
+<div class="d-flex justify-content-between">
+  <img src="assets/images/bordeaux.jpg" class="img-fluid" alt="bordeaux">
+  <img src=" assets/images/cliniqueduparc.jpg"class="img-fluid" alt="cliniqueduparc">
+  <img src="assets/images/hopitalcentral.jpg" class="img-fluid" alt="hopitalcentral">
+</div>
+</div>
+
+<?php include 'includes/footer.php';?>

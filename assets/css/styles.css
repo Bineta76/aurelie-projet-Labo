@@ -106,7 +106,6 @@ p{
 .img{
   position:absolute;
 }
-
 .carousel-caption h3 {
   color: black !important;
 }
@@ -155,4 +154,13 @@ table {
   letter-spacing: 3px;
 }
 
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+.container img {
+  max-width: 100%;
+  height: auto;
+}

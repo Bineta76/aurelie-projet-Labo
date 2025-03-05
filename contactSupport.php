@@ -1,5 +1,6 @@
 <?php include 'includes/header.php';?>
-
+<div class="container">
+        <div class="topnav">
 <a href="inscription.php" aria-label="Inscription">Inscription</a>
             <a href="quiSommesNous.php" aria-label="Qui sommes-nous ?">Qui sommes-nous?</a>
             <a href="dossierpatient.php" aria-label="dossierpatient.php">Dossier patient</a>

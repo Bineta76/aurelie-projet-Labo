@@ -85,7 +85,7 @@ include 'includes/header.php';
                 </div>
                 <div class="form-group mt-3">
                     <label for="password">Mot de passe :</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Entrez votre mot de passe" required>
+                    <input type="password" id="password" name="mot_de_passe" class="form-control" placeholder="Entrez votre mot de passe" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mt-3">Se connecter</button>
                 

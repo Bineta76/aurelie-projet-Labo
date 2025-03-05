@@ -6,7 +6,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Récupération des données du formulaire
     $nom = htmlspecialchars(trim($_POST['nom']));
     $prenom = htmlspecialchars(trim($_POST['prenom']));
-    $login = htmlspecialchars(trim($_POST['login']));
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $numerodesecuritesociale = htmlspecialchars(trim($_POST['numerodesecuritesociale']));
     $mdp = password_hash($_POST['mdp'], PASSWORD_BCRYPT); // Hachage du mot de passe
@@ -23,11 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Insertion des données
-    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, login, email, numerodesecuritesociale, mdp) VALUES (:nom, :prenom, :login, :email, :nss, :mdp)");
+    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numerodesecuritesociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
     $stmt->execute([
         ':nom' => $nom,
         ':prenom' => $prenom,
-        ':login' => $login,
         ':email' => $email,
         ':nss' => $numerodesecuritesociale,
         ':mdp' => $mdp,
