@@ -23,10 +23,6 @@
                 <input type="text" id="prenom" name="prenom" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="login">login:</label>
-                <input type="text" id="login" name="login" class="form-control" required>
-            </div>
-            <div class="form-group">
                 <label for="email">Email :</label>
                 <input type="email" id="email" name="email" class="form-control" required>
             </div>

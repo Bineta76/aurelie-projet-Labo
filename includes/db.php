@@ -21,4 +21,5 @@ $pdo = new PDO(
     ]
 );
 
-echo "Connexion réussie à MySQL via MySQLi et PDO ! 🎉";
+//echo "Connexion réussie à MySQL via MySQLi et PDO ! 🎉";
+?>

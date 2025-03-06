@@ -1,6 +1,42 @@
 <?php
 session_start();
+
+include 'includes/db.php';
 include 'includes/header.php';
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+
+    $email = trim($_POST['email']);
+    $password = trim($_POST['mot_de_passe']);
+
+    $stmt = $pdo->prepare("SELECT * FROM patient WHERE email = :email");
+    $stmt->execute([':email' => $email]);
+    $patient = $stmt->fetch();
+// var_dump($patient);
+// var_dump(password_verify($password, $patient['mdp']));
+// var_dump($_POST);
+    if ($patient && password_verify($password, $patient['mdp'])) {
+       
+        $_SESSION['id_patient'] = $patient['id'];
+        $_SESSION['utilisateur'] = $patient['nom']; // Pour afficher le nom de l'utilisateur
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Ajout d'un token CSRF pour sécuriser
+       // header("Location: index.php"); // Redirection vers la page de prise de rendez-vous
+        //exit();
+    } else {
+        $_SESSION['message_error'] = "Identifiants incorrects.";
+        //header("Location: index.php");
+        //exit();
+    }
+
+    if (!isset($_SESSION['id_patient'])) {
+    echo "
+    Erreur : Vous devez être connecté pour prendre un rendez-vous.
+    ";
+    //exit;
+    }
+}
 ?>
 
 <div class="container">
@@ -53,16 +89,16 @@ include 'includes/header.php';
         </center>
 
     <!-- Messages de session -->
-    <?php if (!empty($_SESSION['message_success'])): ?>
+ <?php if (!empty($_SESSION['message_success'])): ?>
         <div class="alert alert-success mt-4">
-            <?=htmlspecialchars($_SESSION['message_success'])?>
+            <?php htmlspecialchars($_SESSION['message_success'])?>
         </div>
         <?php unset($_SESSION['message_success']);?>
     <?php endif;?>
 
     <?php if (!empty($_SESSION['message_error'])): ?>
         <div class="alert alert-danger mt-4">
-            <?=htmlspecialchars($_SESSION['message_error'])?>
+            <?php htmlspecialchars($_SESSION['message_error'])?>
         </div>
         <?php unset($_SESSION['message_error']);?>
     <?php endif;?>
@@ -77,7 +113,7 @@ include 'includes/header.php';
                 <button type="submit" class="btn btn-danger w-100">Se déconnecter</button>
             </form>
         <?php else: ?>
-            <form action="login.php" method="POST" class="mt-4">
+            <form action="index.php" method="POST" class="mt-4">
                 <h3 class="text-center">Connexion</h3>
                 <div class="form-group">
                     <label for="email">Email :</label>
