@@ -20,12 +20,12 @@
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav">
+             <li><a href="index.php" aria-label="Accueil">Accueil</a></li>
                     <li><a href="inscription.php">Inscription</a></li>
                     <li><a href="quiSommesNous.php">Qui sommes-nous?</a></li>
                     <li><a href="dossierpatient.php">Dossier patient</a></li>
                     <li><a href="dossiermedical.php">Dossier médical</a></li>
                     <li class="active"><a href="rdv.php">Créer un rendez-vous</a></li>
-                    <li><a href="historiqueRdv.php">Historique Rendez-vous</a></li>
                     <li><a href="planningmedecin.php">Planning</a></li>
                     <li><a href="centre.php">Liste des centres</a></li>
                     <li><a href="contactSupport.php">Aide</a></li>

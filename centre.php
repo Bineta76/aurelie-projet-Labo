@@ -15,12 +15,12 @@
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav">
+                <li><a href="Accueil.php" aria-label="Accueil">Accueil</a></li>
                     <li><a href="inscription.php" aria-label="Inscription">Inscription</a></li>
                     <li><a href="quiSommesNous.php" aria-label="Qui sommes-nous ?">Qui sommes-nous?</a></li>
                     <li><a href="dossierpatient.php" aria-label="Dossier patient">Dossier patient</a></li>
                     <li><a href="dossiermedical.php" aria-label="Dossier médical">Dossier médical</a></li>
                     <li><a href="rdv.php" aria-label="Créer un rendez-vous">Créer un rendez-vous</a></li>
-                    <li><a href="historiqueRdv.php" aria-label="Historique des rendez-vous">Historique Rendez-vous</a></li>
                     <li><a href="planningmedecin.php" aria-label="Voir le planning du médecin">Planning</a></li>
                     <li class="active"><a href="centre.php" aria-label="Voir la liste des centres disponibles">Liste des centres</a></li>
                     <li><a href="contactSupport.php" aria-label="Contact support">Aide</a></li>
