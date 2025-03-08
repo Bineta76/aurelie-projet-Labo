@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $servername = "localhost";   // Serveur de base de données (localhost pour développement local)
     $username = "root";          // Nom d'utilisateur de la base de données
     $password = "";              // Mot de passe de la base de données (vide si aucun mot de passe)
-    $dbname = "bdd";             // Nom de la base de données
+    $dbname = "labo";             // Nom de la base de données
 
     // Récupère les informations du formulaire
     $user_input = $_POST['username'];   // Nom d'utilisateur soumis

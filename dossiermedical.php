@@ -42,7 +42,23 @@
                 <td>la patiente présente des kystes dans le corps.Traitement donné: Pillule</td>
                 <td>Docteur Lafarge</td>
             </tr>
-            <!-- ... autres lignes ... -->
-        </tbody>
+            <tr>
+                <th scope="row">2025-02-28</th>
+                <td>Programmation d'un IRM</td>
+                <td>Docteur Lafarge</td>
+                </tr>
+            <tr>
+                <th scope="row">2025-02-24</th>
+                <td>Prise de sang</td>
+                <td>Docteur Lafarge</td>
+                </tr>
+            <tr>
+                <th scope="row">2025-02-09</th>
+                <td>Rendez vous pour consultation pour les données.Traitement donné:doliprane</td>
+                <td>Docteur Lafarge</td>
+       
+       
+       
+            </tbody>
     </table>
 </div>

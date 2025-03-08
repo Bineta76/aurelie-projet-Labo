@@ -7,7 +7,7 @@ session_start();  // Start the session
 $servername = "localhost";
 $username_db = "root";
 $password_db = "";
-$dbname = "bdd";
+$dbname = "labo";
 
 // Create connection
 $conn = new mysqli($servername, $username_db, $password_db, $dbname);
