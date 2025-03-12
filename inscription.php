@@ -59,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <a href="inscription.php" class="active">Inscription</a>
         <a href="quiSommesNous.php">Qui sommes-nous ?</a>
         <a href="dossierpatient.php">Dossier patient</a>
-        <a href="listeRdv.php">Liste des rendez vous patient</a>
         <a href="rdv.php">Créer un rendez-vous</a>
         <a href="planningmedecin.php">Planning</a>
         <a href="centre.php">Liste des centres</a>

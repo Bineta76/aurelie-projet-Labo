@@ -21,7 +21,6 @@
                     <li><a href="dossierpatient.php" aria-label="Dossier patient">Dossier patient</a></li>
                     <li><a href="dossiermedical.php" aria-label="Dossier médical">Dossier médical</a></li>
                     <li><a href="rdv.php" aria-label="Créer un rendez-vous">Créer un rendez-vous</a></li>
-                    <li><a href="listeRdv.php" aria-label="listeRdv">Liste des rendez vous patient</a></li>
                     <li><a href="planningmedecin.php" aria-label="Voir le planning du médecin">Planning</a></li>
                     <li class="active"><a href="centre.php" aria-label="Voir la liste des centres disponibles">Liste des centres</a></li>
                     <li><a href="contactSupport.php" aria-label="Contact support">Aide</a></li>
