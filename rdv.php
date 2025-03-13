@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM cabinet_medical WHERE id = ?");
         $stmt->execute([$cabinetMedical]);
         if ($stmt->fetchColumn() == 0) {
-            die("Cabinet médical invalide !");
+            die("Cabinet medical invalide !");
         }
 
         // Vérifier si le médecin existe
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Préparer et exécuter la requête SQL pour insérer le rendez-vous
-        $sql = "INSERT INTO rendez_vous (date_debut, id_medecin, id_examen, cabinet_medical) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO rendez_vous (date_debut, id_medecin, id_examen,id_cabinet_medical) VALUES (?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$dateDebut, $idMedecin, $idExamen, $cabinetMedical]);
 
@@ -115,6 +115,10 @@ $examens = $pdo->query("SELECT id, nom FROM examen")->fetchAll();
                     <li><a href="quiSommesNous.php">Qui sommes-nous ?</a></li>
                     <li><a href="dossierpatient.php">Dossier patient</a></li>
                     <li><a href="rdv.php">Créer un rendez-vous</a></li>
+                   <li> <a href="planningmedecin.php" aria-label="Voir le planning du médecin">Planning</a></li>
+          <li>  <a href="centre.php" aria-label="Voir la liste des centres disponibles">Liste des centres</a></li>
+           <li> <a href="contactSupport.php" aria-label="contactSupport">Aide </a>   </li>
+
                 </ul>
             </div>
         </div>
