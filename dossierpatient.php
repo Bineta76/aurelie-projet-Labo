@@ -38,7 +38,10 @@
             <label for="numerodesecuritesociale">Numéro de sécurité sociale :</label>
             <input type="text" id="numerodesecuritesociale" name="numerodesecuritesociale" class="form-control" maxlength="15" required>
         </div>
-        <button type="submit" class="btn btn-primary">Soumettre</button>
+        <button type="submit" class="btn btn-primary">CREER</button>
+        <button type="submit" class="btn btn-primary">LIRE</button>
+        <button type="submit" class="btn btn-primary">METTRE A JOUR</button>
+        <button type="submit" class="btn btn-primary">SUPPRIMER</button>
     </form>
 </div>
 
