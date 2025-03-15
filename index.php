@@ -39,18 +39,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<div class="container">
-        <div class="topnav">
-            <a class="active" href="index.php" aria-label="Accueil">Accueil</a>
-            <a href="inscription.php" aria-label="Inscription">Inscription</a>
-            <a href="quiSommesNous.php" aria-label="Qui sommes-nous ?">Qui sommes-nous?</a>
-            <a href="dossierpatient.php" aria-label="dossierpatient.php">Dossier patient</a>
-            <a href="rdv.php" aria-label="Créer un rendez-vous">Créer un rendez-vous</a>
-            <a href="planningmedecin.php" aria-label="Voir le planning du médecin">Planning</a>
-            <a href="centre.php" aria-label="Voir la liste des centres disponibles">Liste des centres</a>
-            <a href="contactSupport.php" aria-label="contactSupport">Aide </a>   
-            </a>
-        </div>
+<div class="container-fluid">  
+        
 
         <center><img src="assets/images/batimentlabo.jpg" width="1100px" height="600px"></center>
 
@@ -138,3 +128,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <?php include 'includes/footer.php';?>
 </div>
+

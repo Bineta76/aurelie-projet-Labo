@@ -112,7 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier'])) {
             $errors[] = "Erreur lors de la mise à jour : " . htmlspecialchars($e->getMessage());
         }
     }
-}
+} 
+require_once 'require.php';
+require_once 'includes/header.php';
 ?>
 
 <div class="container mt-4">
@@ -130,7 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier'])) {
     <?php endif; ?>
 
     <form method="POST" class="border p-4 rounded bg-light">
-    <input type="hidden" name="id" value="<?php echo htmlspecialchars($patient['id']); ?>">
+    <input type="hidden" name="id" value="<?php echo isset($patient['id']) ? htmlspecialchars($patient['id'], ENT_QUOTES, 'UTF-8') : ''; ?>">
+
+
 
 
         

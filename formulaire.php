@@ -20,9 +20,6 @@
             <label for="Login">Login</label>
             <input type="text" id="Login" name="Login" required>
 
-            <label for="login">Adresse</label>
-            <input type="text" id="Adresse" name="Adresse" required>
-
 
             <label for="email">Email</label>
             <input type="text" id="email" name="email" required>
