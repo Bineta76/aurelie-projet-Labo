@@ -46,6 +46,9 @@ if (isset($_GET['id'])) {
     }
 }
 
+
+
+
 // Mettre à jour le patient
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier'])) {
     // Récupération des données
@@ -94,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier'])) {
                 numerodesecuritesociale = :numerodesecuritesociale
                 WHERE id = :id");
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] === 'create');
             $stmt->execute([
                 'id' => $id,
                 'nom' => $nom,
@@ -135,7 +139,7 @@ require_once 'includes/header.php';
     <input type="hidden" name="id" value="<?php echo isset($patient['id']) ? htmlspecialchars($patient['id'], ENT_QUOTES, 'UTF-8') : ''; ?>">
 
 
-
+    
 
         
         <div class="row g-3">
