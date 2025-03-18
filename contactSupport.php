@@ -1,6 +1,7 @@
 <?php include 'includes/header.php';?>
+session_start();
 <div class="container">
-        
+
 
     <h1 class="text-center">Centre d'aide</h1>
     <div class="container">

@@ -1,7 +1,7 @@
 <?php 
 include("includes/header.php");
 include("includes/db.php"); // Fichier contenant la connexion PDO
-
+session_start();
 // Connexion à la base de données
 try {
     $pdo = new PDO('mysql:host=localhost;dbname=labo', 'root', '', [
