@@ -123,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
         <?php endif;?>
     </div>
-<!--Connexion médecin-->
+
 
 
 <?php include 'includes/footer.php';?>
