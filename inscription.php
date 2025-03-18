@@ -6,12 +6,12 @@ include 'includes/db.php'; // Connexion à la base de données
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Récupération et validation des données du formulaire
     $nom = htmlspecialchars(trim($_POST['nom']));
-    $prenom = htmlspecialchars(trim($_POST['prenom']));
+    $prénom = htmlspecialchars(trim($_POST['prénom']));
     $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
     $numerodesecuritesociale = htmlspecialchars(trim($_POST['numerodesecuritesociale']));
     $mdp = trim($_POST['mdp']);
     // Vérification des champs obligatoires
-    if (!$nom || !$prenom || !$email || !$numerodesecuritesociale || !$mdp) {
+    if (!$nom || !$prénom || !$email || !$numerodesecuritesociale || !$mdp) {
         $_SESSION['message_error'] = "Tous les champs sont obligatoires.";
         header("Location: inscription.php");
         exit();
@@ -31,18 +31,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Hachage du mot de passe sécurisé
     $mdp_hashed = password_hash($mdp, PASSWORD_BCRYPT);
     // Vérification des doublons (email ou numéro de sécurité sociale déjà utilisé)
-    $stmt = $pdo->prepare("SELECT id FROM patient WHERE email = :email OR numerodesecuritesociale = :nss");
+    $stmt = $pdo->prepare("SELECT id FROM patient WHERE email = :email OR numero_de_securite_sociale = :nss");
     $stmt->execute([':email' => $email, ':nss' => $numerodesecuritesociale]);
     if ($stmt->rowCount() > 0) {
         $_SESSION['message_error'] = "Cet email ou numéro de sécurité sociale est déjà utilisé.";
         header("Location: inscription.php");
         exit();
     }
+    var_dump($nom, $prénom, $email, $numerodesecuritesociale, $mdp_hashed);
     // Insertion des données dans la base de données
-    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numerodesecuritesociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
+    $stmt = $pdo->prepare("INSERT INTO patient (nom, prénom, email, numero_de_securite_sociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
     $stmt->execute([
         ':nom' => $nom,
-        ':prenom' => $prenom,
+        ':prenom' => $prénom,
         ':email' => $email,
         ':nss' => $numerodesecuritesociale,
         ':mdp' => $mdp_hashed,
@@ -77,8 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="text" id="nom" name="nom" class="form-control" required>
         </div>
         <div class="form-group mb-3">
-            <label for="prenom">Prénom :</label>
-            <input type="text" id="prenom" name="prenom" class="form-control" required>
+            <label for="prénom">Prénom :</label>
+            <input type="text" id="prénom" name="prénom" class="form-control" required>
         </div>
         <div class="form-group mb-3">
             <label for="email">Email :</label>
