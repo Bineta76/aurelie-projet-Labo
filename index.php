@@ -3,7 +3,7 @@ session_start();
 
 include 'includes/db.php';
 include 'includes/header.php';
-
+var_dump($_SESSION);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // var_dump(password_verify($password, $patient['mdp']));
 // var_dump($_POST);
     if ($patient && password_verify($password, $patient['mdp'])) {
-       
+        
         $_SESSION['id_patient'] = $patient['id'];
         $_SESSION['utilisateur'] = $patient['nom']; // Pour afficher le nom de l'utilisateur
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Ajout d'un token CSRF pour sécuriser
