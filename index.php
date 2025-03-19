@@ -3,7 +3,6 @@ session_start();
 
 include 'includes/db.php';
 include 'includes/header.php';
-var_dump($_SESSION);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
@@ -17,6 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // var_dump($patient);
 // var_dump(password_verify($password, $patient['mdp']));
 // var_dump($_POST);
+
     if ($patient && password_verify($password, $patient['mdp'])) {
        
         $_SESSION['id_patient'] = $patient['id'];
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
+ 
 <div class="container-fluid">  
         
 
@@ -78,6 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <img src="assets/images/endo.jpg" />
             </div>
         </center>
+       
 
     <!-- Messages de session -->
  <?php if (!empty($_SESSION['message_success'])): ?>
