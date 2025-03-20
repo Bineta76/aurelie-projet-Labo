@@ -141,6 +141,8 @@ $dossiersMedicaux = $stmt->fetchAll(PDO::FETCH_ASSOC);
        <!-- formulaire de création -->
       
         <button type="submit" class="btn btn-info">Créer</button>
+        <button type="submit" class="btn btn-info">Supprimer</button>
+        <button type="submit" class="btn btn-info">Mise à jour</button>
     </form>
 
     <div class="my-5 row">
