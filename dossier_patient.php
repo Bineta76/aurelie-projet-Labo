@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier'])) {
                 datedenaissance = :datedenaissance,
                 lieudenaissance = :lieudenaissance,
                 email = :email,
-                numerodesecuritesociale = :numerodesecuritesociale
+                numerodesecuritesociale = :numerodesecuritesociale,
                 WHERE id = :id");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] === 'create');

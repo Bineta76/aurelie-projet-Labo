@@ -38,9 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: inscription.php");
         exit();
     }
+    $mdp_hashed = $mdp;
     var_dump($nom, $prénom, $email, $numerodesecuritesociale, $mdp_hashed);
     // Insertion des données dans la base de données
-    $stmt = $pdo->prepare("INSERT INTO patient (nom, prénom, email, numero_de_securite_sociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
+    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
     $stmt->execute([
         ':nom' => $nom,
         ':prenom' => $prénom,
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ':mdp' => $mdp_hashed,
     ]);
     $_SESSION['message_success'] = "Inscription réussie !";
-    header("Location: index.php");
+    //header("Location: index.php");
     exit();
 }
 ?>

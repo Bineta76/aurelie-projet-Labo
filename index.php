@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-var_dump($_SESSION);
+
 include 'includes/db.php';
 include 'includes/header.php';
 
@@ -12,6 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['mot_de_passe']);
 
+    $mdp_hashed = password_hash($password, PASSWORD_BCRYPT);
+
     $stmt = $pdo->prepare("SELECT * FROM patient WHERE email = :email");
     $stmt->execute([':email' => $email]);
     $patient = $stmt->fetch();
@@ -19,12 +21,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // var_dump(password_verify($password, $patient['mdp']));
 // var_dump($_POST);
 
-    if ($patient && password_verify($password, $patient['mdp'])) {
+echo $patient['mdp'];
+echo "<\br>";
+echo $mdp_hashed;
+
+    if($patient['mdp'] == $password){
+    //if ($patient && password_verify($password, $patient['mdp'])) {
        
+        echo "mdp ok ";
         $_SESSION['id_patient'] = $patient['id'];
         $_SESSION['utilisateur'] = $patient['nom']; // Pour afficher le nom de l'utilisateur
-      //$_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Ajout d'un token CSRF pour sécuriser
-       // header("Location: index.php"); // Redirection vers la page de prise de rendez-vous
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Ajout d'un token CSRF pour sécuriser
+        header("Location: index.php"); // Redirection vers la page de prise de rendez-vous
         //exit();
     } else {
         
