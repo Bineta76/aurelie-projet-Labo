@@ -6,30 +6,35 @@ include 'includes/db.php'; // Connexion à la base de données
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Récupération et validation des données du formulaire
     $nom = htmlspecialchars(trim($_POST['nom']));
-    $prénom = htmlspecialchars(trim($_POST['prénom']));
+    $prenom = htmlspecialchars(trim($_POST['prénom'])); // Correction du nom du champ
     $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
     $numerodesecuritesociale = htmlspecialchars(trim($_POST['numerodesecuritesociale']));
     $mdp = trim($_POST['mdp']);
+    
     // Vérification des champs obligatoires
-    if (!$nom || !$prénom || !$email || !$numerodesecuritesociale || !$mdp) {
+    if (!$nom || !$prenom || !$email || !$numerodesecuritesociale || !$mdp) {
         $_SESSION['message_error'] = "Tous les champs sont obligatoires.";
         header("Location: inscription.php");
         exit();
     }
-    // Vérification de la longueur du numéro de sécurité sociale
+    
+    // Vérification de la validité du numéro de sécurité sociale
     if (!preg_match('/^[0-9]{15}$/', $numerodesecuritesociale)) {
         $_SESSION['message_error'] = "Le numéro de sécurité sociale doit contenir exactement 15 chiffres.";
         header("Location: inscription.php");
         exit();
     }
+    
     // Vérification de la longueur du mot de passe
     if (strlen($mdp) < 8) {
         $_SESSION['message_error'] = "Le mot de passe doit contenir au moins 8 caractères.";
         header("Location: inscription.php");
         exit();
     }
+    
     // Hachage du mot de passe sécurisé
     $mdp_hashed = password_hash($mdp, PASSWORD_BCRYPT);
+
     // Vérification des doublons (email ou numéro de sécurité sociale déjà utilisé)
     $stmt = $pdo->prepare("SELECT id FROM patient WHERE email = :email OR numero_de_securite_sociale = :nss");
     $stmt->execute([':email' => $email, ':nss' => $numerodesecuritesociale]);
@@ -38,26 +43,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: inscription.php");
         exit();
     }
-    $mdp_hashed = $mdp;
-    var_dump($nom, $prénom, $email, $numerodesecuritesociale, $mdp_hashed);
+
     // Insertion des données dans la base de données
-    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
+    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numerodesecuritesociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
     $stmt->execute([
         ':nom' => $nom,
-        ':prenom' => $prénom,
+        ':prenom' => $prenom,
         ':email' => $email,
         ':nss' => $numerodesecuritesociale,
         ':mdp' => $mdp_hashed,
     ]);
+    
     $_SESSION['message_success'] = "Inscription réussie !";
-    //header("Location: index.php");
+    header("Location: index.php");
     exit();
 }
 ?>
 
 <div class="container mt-5">
-   
-
     <h1 class="text-center mt-4 mb-4">Inscription</h1>
 
     <!-- Affichage des messages d'erreur/succès -->

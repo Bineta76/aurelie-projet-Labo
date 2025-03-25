@@ -174,7 +174,7 @@ $dossiersMedicaux = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <input type="text" id="medecin" name="medecin" value="<?= $dossierMedical['medecin'] ?>" class="form-control">
                     </div>
                     <div class="d-flex gap-5 justify-content-center">
-                    
+                  
                     </div>
                 </form>
             </div>
