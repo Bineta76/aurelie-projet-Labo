@@ -12,17 +12,19 @@ h1 {
 }
 
 label {
-  display: block;
+ 
 font:1rem'Fira Sans',
 sans-serif;
 
 }
 input,label {
+  flex-direction: column;
   margin: 0.4rem 0;
-
+ display:block
 }
 
 label {
+  
   font-family: sans-serif;
   font-size: 1rem;
   padding-right: 10px;

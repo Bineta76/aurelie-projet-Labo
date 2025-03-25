@@ -26,7 +26,7 @@ echo "<\br>";
 echo $mdp_hashed;
 
     if($patient['mdp'] == $password){
-    //if ($patient && password_verify($password, $patient['mdp'])) {
+    if ($patient && password_verify($password, $patient['mdp'])) {
        
         echo "mdp ok ";
         $_SESSION['id_patient'] = $patient['id'];
@@ -136,8 +136,5 @@ echo $mdp_hashed;
         <?php endif;?>
     </div>
 
-
-
-<?php include 'includes/footer.php';?>
+    <?php include 'includes/footer.php';?>
 </div>
-
