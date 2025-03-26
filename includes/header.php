@@ -20,7 +20,7 @@
         <a <?=$_SERVER['PHP_SELF'] == '/index.php' ? ' class="active"' : ''?>href="index.php">Accueil</a>
         <a <?=$_SERVER['PHP_SELF'] == '/inscription.php' ? ' class="active"' : ''?>href="inscription.php">Inscription</a>
         <a <?=$_SERVER['PHP_SELF'] == '/quiSommesNous.php' ? ' class="active"' : ''?>href="quiSommesNous.php">Qui sommes-nous ?</a>
-        <a <?=$_SERVER['PHP_SELF'] == '/dossier_patient.php' ? ' class="active"' : ''?>href="dossier_patient.php">Dossier patient</a> 
+        <a <?=$_SERVER['PHP_SELF'] == '/liste_des_Rdv.php' ? ' class="active"' : ''?>href="liste_des_Rdv.php">liste_des_Rdv</a> 
         <a <?=$_SERVER['PHP_SELF'] == '/dossier_medical.php' ? ' class="active"' : ''?>href="dossier_medical.php">Dossier medical</a> 
         <a <?=$_SERVER['PHP_SELF'] == '/rdv.php' ? ' class="active"' : ''?>href="rdv.php">Créer un rendez-vous</a>
         <a <?=$_SERVER['PHP_SELF'] == '/planningmedecin.php' ? ' class="active"' : ''?>href="planningmedecin.php">Planning</a>

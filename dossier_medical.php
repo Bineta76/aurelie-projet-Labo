@@ -1,183 +1,142 @@
-<?php 
-include("includes/header.php");
-include("includes/db.php"); // Fichier contenant la connexion PDO
-session_start();
-// Connexion à la base de données
-try {
-    $pdo = new PDO('mysql:host=localhost;dbname=labo', 'root', '', [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ]);
-} catch (PDOException $e) {
-    die("Erreur de connexion à la base de données : " . $e->getMessage());
-}
-
-// Ajouter un dossier
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] === 'create'){
-
-    $nom = trim($_POST['nom']);
-    $prenom = trim($_POST['prenom']);
-    $date = $_POST['date'];
-    $compte_rendu = trim($_POST['compte_rendu']);
-    $medecin = trim($_POST['medecin']);
-
-    if (!empty($nom) && !empty($prenom) && !empty($date) && !empty($compte_rendu) && !empty($medecin)) {
-        try {
-            $sql = "INSERT INTO dossier_medical (nom, prenom, date, compte_rendu, medecin) VALUES (:nom, :prenom, :date, :compte_rendu, :medecin)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':nom' => $nom,
-                ':prenom' => $prenom,
-                ':date' => $date,
-                ':compte_rendu' => $compte_rendu,
-                ':medecin' => $medecin
-            ]);
-            // Redirection après ajout
-            header("Location: dossier_medical.php");
-            exit();
-        } catch (PDOException $e) {
-            echo "Erreur lors de l'ajout du dossier : " . htmlspecialchars($e->getMessage());
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Comptes Rendus Médicaux</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-    } else {
-        echo "<p style='color:red;'>Tous les champs sont obligatoires.</p>";
-    }
-}
-
-// Supprimer un dossier (section supprimée mal placée et doit être corrigée)
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] === 'delete'){
-    $id = $_POST['id'];
-    if (!empty($id)) {
-        try {
-            $sql = "DELETE FROM dossier_medical WHERE id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([':id' => $id]);
-            echo "Dossier supprimé avec succès.";
-        } catch (PDOException $e) {
-            echo "Erreur lors de la suppression du dossier : " . htmlspecialchars($e->getMessage());
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
         }
-    } else {
-        echo "<p style='color:red;'>ID manquant pour supprimer le dossier.</p>";
-    }
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] === 'update') {
-    $id = $_POST['id'];
-    $nom = trim($_POST['nom']);
-    $prenom = trim($_POST['prenom']);
-    $date = $_POST['date'];
-    $compte_rendu = trim($_POST['compte_rendu']);
-    $medecin = trim($_POST['medecin']);
-
-    if (!empty($id) && !empty($nom) && !empty($prenom) && !empty($date) && !empty($compte_rendu) && !empty($medecin)) {
-        try {
-            $sql = "UPDATE dossier_medical SET nom = :nom, prenom = :prenom, date = :date, compte_rendu = :compte_rendu, medecin = :medecin WHERE id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':id' => $id,
-                ':nom' => $nom,
-                ':prenom' => $prenom,
-                ':date' => $date,
-                ':compte_rendu' => $compte_rendu,
-                ':medecin' => $medecin
-            ]);
-            echo "Dossier mise à jour avec succès.";
-        } catch (PDOException $e) {
-            echo "Erreur lors de la mise à jour du dossier : " . htmlspecialchars($e->getMessage());
+        th {
+            background-color: #f2f2f2;
         }
-    } else {
-        echo "<p style='color:red;'>ID manquant pour mise à jour du dossier.</p>";
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .btn-delete:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Liste des Comptes Rendus Médicaux</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Médecin Rencontré</th>
+            <th>Accéder au Compte Rendu</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2025-03-26</td>
+            <td>Dr. Lepic</td>
+            <td> J'ai rencontré le patient Monsieur Monseigneur ,du à une douleur musculaire au niveau de la cheville </td>
+            <td><button class="btn-delete" onclick="confirmDelete(1)">Supprimer</button></td>
+        </tr>
+        <tr>
+            <td>2025-03-26</td>
+            <td>Dr. Lepic</td>
+            <td>J'ai vu Me Caront pour une douleur au pied suite à un faux mouvement</td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+        </tr>
+        <tr>
+            <td>2025-03-26</td>
+            <td>Dr. Lafarge</td>
+            <td>J'ai vu Mr Block aux urgences suite à une mauvaise chute dans sa maison,avec perte de connaissance</td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+        </tr>
+        <tr>
+            <td>2025-03-26</td>
+            <td>Dr. Lafarge</td>
+            <td>J'ai vu Mr Peters aux urgences suite à des douleurs dentaires </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+        </tr>
+        <tr>
+            <td>2025-03-26</td>
+            <td>Dr. Lafarge</td>
+            <td>J'ai vu Mme Fleurettte aux urgences suite à une chute à son travail </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+        </tr>
+        <tr>
+            <td>2025-03-26</td>
+            <td>Dr. Lafarge</td>
+            <td>J'ai vu Mme Peterseon aux urgences suite à une chute à dans sa maison ,perte d'équilibre </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+        </tr>
+        <tr>
+            <td>2025-03-26</td>
+            <td>Dr. Lepic</td>
+            <td>J'ai vu Mme Couet,pour des douleurs musculaires </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+        </tr>
+        <tr>
+        <td>2025-03-26</td>
+            <td>Dr. Lafarge</td>
+            <td>J'ai vu Mme Lahalle aux urgences suite à une toux suspecte et intense </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+            </tr>
+            <tr>
+        <td>2025-03-26</td>
+            <td>Dr. Laville</td>
+            <td>J'ai vu Mme Lalier aux urgences pour une mauvaise chute </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+            </tr>
+            <tr>
+        <td>2025-03-26</td>
+            <td>Dr. Lafarge</td>
+            <td>J'ai vu Mme Carlosa aux urgences suite à une migraine persistante </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+            </tr>
+            <tr>
+        <td>2025-03-26</td>
+            <td>Dr. Lepic</td>
+            <td>J'ai vu Mme Coffret pour des douleurs lombaires </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+            </tr>
+            <tr>
+        <td>2025-03-26</td>
+            <td>Dr. Lepic</td>
+            <td>J'ai vu Mme Plume pour un suivi d'opérations pour son dos </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+            </tr>
+            <tr>
+        <td>2025-03-26</td>
+            <td>Dr. Laville</td>
+            <td>J'ai vu Mr Pierrot  pour des difficultés respiratoires </td>
+            <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
+            </tr>
+
+
+
+
+        <!-- Ajoutez d'autres lignes ici -->
+    </tbody>
+</table>
+
+<script>
+    function confirmDelete(id) {
+        if (confirm("Voulez-vous vraiment supprimer ce compte rendu ?")) {
+            // Logique de suppression ici, par exemple une requête AJAX pour supprimer l'entrée du serveur
+            alert("Compte rendu " + id + " supprimé.");
+        }
     }
-}
+</script>
 
-$sql = 'SELECT * FROM dossier_medical';
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-
-$dossiersMedicaux = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-?>
-
-<div class="container mt-5">
-    <h1 class="text-center mt-4 mb-4">Dossier Médical</h1>
-
-    <!-- Affichage des messages d'erreur/succès -->
-    <?php if (isset($_SESSION['message_error'])): ?>
-        <div class="alert alert-danger">
-            <?= $_SESSION['message_error']; unset($_SESSION['message_error']); ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_SESSION['message_success'])): ?>
-        <div class="alert alert-success">
-            <?= $_SESSION['message_success']; unset($_SESSION['message_success']); ?>
-        </div>
-    <?php endif; ?>
-
-    
-    <h2>Création d'un dossier médical :</h2>
-    <form method="post" class="mt-4">
-        <input type="hidden" name="action" value="create">
-        <div class="form-group mb-3">
-            <label for="nom">nom :</label>
-            <input type="text" id="nom" name="nom" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="prenom">prénom :</label>
-            <input type="text" id="prenom" name="prenom" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="date">date :</label>
-            <input type="date" id="date" name="date" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="compte_rendu">compte rendu :</label>
-            <textarea id="compte_rendu" name="compte_rendu" class="form-control" rows="4"></textarea>
-        </div>
-        <div class="form-group mb-3">
-            <label for="medecin">médecin :</label>
-            <input type="text" id="medecin" name="medecin" class="form-control">
-         
-        </div>
-       <!-- formulaire de création -->
-      
-        <button type="submit" class="btn btn-info">Créer</button>
-        <button type="submit" class="btn btn-info">Supprimer</button>
-        <button type="submit" class="btn btn-info">Mise à jour</button>
-    </form>
-
-    <div class="my-5 row">
-        <?php foreach($dossiersMedicaux as $dossierMedical) : ?>
-            <div class="col-12 col-md-6 my-5">
-                <h2>Modifier le dossier médical : <?= $dossierMedical['nom'] ?></h2>
-                <form method="post" class="mt-4">
-                    <input type="hidden" name="id" value="<?= $dossierMedical['id'] ?>">
-                    <div class="form-group mb-3">
-                        <label for="nom">nom :</label>
-                        <input type="text" id="nom" name="nom" value="<?= $dossierMedical['nom'] ?>" class="form-control" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="prenom">prénom :</label>
-                        <input type="text" id="prenom" name="prenom" value="<?= $dossierMedical['prenom'] ?>" class="form-control" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="date">date :</label>
-                        <input type="date" id="date" name="date" value="<?= $dossierMedical['date'] ?>" class="form-control" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="compte_rendu">compte rendu :</label>
-                        <textarea id="compte_rendu" name="compte_rendu" class="form-control" rows="4">
-                            <?= $dossierMedical['compte_rendu'] ?>
-                        </textarea>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="medecin">médecin :</label>
-                        <input type="text" id="medecin" name="medecin" value="<?= $dossierMedical['medecin'] ?>" class="form-control">
-                    </div>
-                    <div class="d-flex gap-5 justify-content-center">
-                  
-                    </div>
-                </form>
-            </div>
-        <?php endforeach ?>
-    </div>
-</div>
+</body>
+</html>

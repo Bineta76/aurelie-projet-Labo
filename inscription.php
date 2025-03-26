@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Insertion des données dans la base de données
-    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numerodesecuritesociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
+    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
     $stmt->execute([
         ':nom' => $nom,
         ':prenom' => $prenom,

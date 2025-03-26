@@ -17,7 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $pdo->prepare("SELECT * FROM patient WHERE email = :email");
     $stmt->execute([':email' => $email]);
     $patient = $stmt->fetch();
-// var_dump($patient);
+    #echo $email;
+ #var_dump($patient);
 // var_dump(password_verify($password, $patient['mdp']));
 // var_dump($_POST);
 
@@ -25,7 +26,7 @@ echo $patient['mdp'];
 echo "<\br>";
 echo $mdp_hashed;
 
-    if($patient['mdp'] == $password){
+    #if($patient['mdp'] == $password){
     if ($patient && password_verify($password, $patient['mdp'])) {
        
         echo "mdp ok ";
@@ -137,4 +138,4 @@ echo $mdp_hashed;
     </div>
 
     <?php include 'includes/footer.php';?>
-</div>
+        </div>
