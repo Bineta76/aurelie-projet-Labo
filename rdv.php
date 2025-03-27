@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dateDebut = $_POST['date'] ?? '';
     $idMedecin = $_POST['medecin'] ?? '';
     $idExamen = $_POST['type_examen'] ?? '';
-    $cabinetMedical = $_POST['centre'] ?? '';
+    $cabinetMedical = $_POST['cabinet_medical'] ?? ''; // Corrected the field name
 
     if (empty($dateDebut) || empty($idMedecin) || empty($idExamen) || empty($cabinetMedical)) {
         die("Tous les champs sont obligatoires !");
@@ -73,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Préparer et exécuter la requête SQL pour insérer le rendez-vous
-        $sql = "INSERT INTO rendez_vous (date_debut, id_medecin, id_examen,id_cabinet_medical) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO rdv (heure_de_debut, id_medecin, id_examen, id_cabinet_medical) VALUES (?, ?, ?, ?)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$dateDebut, $idMedecin, $idExamen, $idCabinetMedical]);
+        $stmt->execute([$dateDebut, $idMedecin, $idExamen, $cabinetMedical]);
 
         echo "Rendez-vous enregistré avec succès !";
     } catch (PDOException $e) {
@@ -98,16 +98,14 @@ include 'includes/header.php';
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 </head>
 <body>
-    
-    
     <div class="container">
         <h2>Prendre un rendez-vous</h2>
         <form method="POST" action="">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
 
             <div class="form-group">
-                <label for="centre">Cabinet médical :</label>
-                <select name="centre" id="centre" class="form-control" required>
+                <label for="cabinet_medical">Cabinet médical :</label> <!-- Corrected the field name -->
+                <select name="cabinet_medical" id="cabinet_medical" class="form-control" required>
                     <option value="">Sélectionnez un cabinet médical</option>
                     <?php foreach ($cabinetsMedical as $cabinet): ?>
                         <option value="<?php echo htmlspecialchars($cabinet['id']); ?>">
@@ -150,4 +148,7 @@ include 'includes/header.php';
         </form>
         <?php include 'includes/footer.php';?>
     </div>
+</body>
+</html>
+
 
