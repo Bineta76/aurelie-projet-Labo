@@ -39,6 +39,7 @@
             <th>Date</th>
             <th>Médecin Rencontré</th>
             <th>Accéder au Compte Rendu</th>
+            <th>Prescriptions</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -47,78 +48,91 @@
             <td>2025-03-26</td>
             <td>Dr. Lepic</td>
             <td> J'ai rencontré le patient Monsieur Monseigneur ,du à une douleur musculaire au niveau de la cheville </td>
+            <td>Dopliprane et pommade</td>
             <td><button class="btn-delete" onclick="confirmDelete(1)">Supprimer</button></td>
         </tr>
         <tr>
             <td>2025-03-26</td>
             <td>Dr. Lepic</td>
             <td>J'ai vu Me Caront pour une douleur au pied suite à un faux mouvement</td>
+            <td>Radiographie et pommade</td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
         </tr>
         <tr>
             <td>2025-03-26</td>
             <td>Dr. Lafarge</td>
             <td>J'ai vu Mr Block aux urgences suite à une mauvaise chute dans sa maison,avec perte de connaissance</td>
+            <td>IRM et séjour à l'hoptital pour plus d'examens</td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
         </tr>
         <tr>
             <td>2025-03-26</td>
             <td>Dr. Lafarge</td>
             <td>J'ai vu Mr Peters aux urgences suite à des douleurs dentaires </td>
+            <td>Amoxicicline et doliprane </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
         </tr>
         <tr>
             <td>2025-03-26</td>
             <td>Dr. Lafarge</td>
             <td>J'ai vu Mme Fleurettte aux urgences suite à une chute à son travail </td>
+            <td> IRM et radiographie </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
         </tr>
         <tr>
             <td>2025-03-26</td>
             <td>Dr. Lafarge</td>
             <td>J'ai vu Mme Peterseon aux urgences suite à une chute à dans sa maison ,perte d'équilibre </td>
+            <td> IRM et radiographie </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
         </tr>
         <tr>
             <td>2025-03-26</td>
             <td>Dr. Lepic</td>
             <td>J'ai vu Mme Couet,pour des douleurs musculaires </td>
+            <td> Pommade et doliprane</td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
         </tr>
         <tr>
         <td>2025-03-26</td>
             <td>Dr. Lafarge</td>
             <td>J'ai vu Mme Lahalle aux urgences suite à une toux suspecte et intense </td>
+            <td> IRM et radiographie </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
             </tr>
             <tr>
         <td>2025-03-26</td>
             <td>Dr. Laville</td>
             <td>J'ai vu Mme Lalier aux urgences pour une mauvaise chute </td>
+            <td> IRM et radiographie </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
             </tr>
             <tr>
         <td>2025-03-26</td>
             <td>Dr. Lafarge</td>
             <td>J'ai vu Mme Carlosa aux urgences suite à une migraine persistante </td>
+            <td> IRM et radiographie </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
             </tr>
             <tr>
         <td>2025-03-26</td>
             <td>Dr. Lepic</td>
             <td>J'ai vu Mme Coffret pour des douleurs lombaires </td>
+            <td> Radiologie </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
             </tr>
             <tr>
         <td>2025-03-26</td>
             <td>Dr. Lepic</td>
             <td>J'ai vu Mme Plume pour un suivi d'opérations pour son dos </td>
+            <td> Suivis </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
             </tr>
             <tr>
         <td>2025-03-26</td>
             <td>Dr. Laville</td>
             <td>J'ai vu Mr Pierrot  pour des difficultés respiratoires </td>
+            <td> IRM </td>
             <td><button class="btn-delete" onclick="confirmDelete(2)">Supprimer</button></td>
             </tr>
 
