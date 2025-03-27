@@ -1,7 +1,8 @@
-<?php include 'includes/header.php'; ?>
+<?php
+include 'includes/header.php';
 session_start();
+?>
 <!DOCTYPE html>
-<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,7 +46,7 @@ session_start();
         <div class="carousel-inner">
             <!-- Première slide -->
             <div class="carousel-item active">
-                <img src="assets/images/monEspaceSanté.jpg" class="d-block w-100" alt="Accéder à mon parcours santé">
+                <img src="assets/images/monEspaceSanté.jpg" class="d-block w-40" alt="Accéder à mon parcours santé">
                 <div class="carousel-caption d-none d-md-block">
                     <h3>Accéder à mon parcours santé</h3>
                     <p><a href="https://www.monespacesante.fr" class="btn btn-primary">Visiter le site</a></p>
@@ -54,7 +55,7 @@ session_start();
 
             <!-- Deuxième slide -->
             <div class="carousel-item">
-                <img src="assets/images/pointDinterrogation.jpg" class="d-block w-100" alt="Découvrir Santé">
+                <img src="assets/images/Point_d_interrogation.jpg" class="d-block w-40" alt="Découvrir Santé">
                 <div class="carousel-caption d-none d-md-block">
                     <h3>Découvrir Santé</h3>
                     <p>Retrouvez tous vos documents et informations de santé.</p>
@@ -63,7 +64,7 @@ session_start();
 
             <!-- Troisième slide -->
             <div class="carousel-item">
-                <img src="assets/images/images.jpg" class="d-block w-100" alt="J'ai oublié mon mot de passe et mes identifiants">
+                <img src="assets/images/images.jpg" class="d-block w-40" alt="J'ai oublié mon mot de passe et mes identifiants">
                 <div class="carousel-caption d-none d-md-block">
                     <h3>J'ai oublié mon mot de passe</h3>
                     <p><a href="https://www.monespacesante.fr/questions-frequentes" class="btn btn-secondary">Consulter la FAQ</a></p>
