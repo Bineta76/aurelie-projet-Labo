@@ -160,4 +160,6 @@ table {
   letter-spacing: 3px;
 }
 
-
+.container-calendar{
+  min-width: 1000px;
+}
