@@ -1,3 +1,7 @@
+<?php
+include 'includes/header.php';
+session_start();
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -18,3 +22,4 @@
     <div id='calendar'></div>
   </body>
 </html>
+
