@@ -59,15 +59,16 @@ session_start();
                 <div class="carousel-caption d-none d-md-block">
                     <h3>Découvrir Santé</h3>
                     <p>Retrouvez tous vos documents et informations de santé.</p>
+                    <p>Cliquer sur l'espace santé</p>
                 </div>
             </div>
 
             <!-- Troisième slide -->
             <div class="carousel-item">
-                <img src="assets/images/images.jpg" class="d-block w-40" alt="J'ai oublié mon mot de passe et mes identifiants">
+                <img src="assets/images/espace_sante.jpg" class="d-block w-40" alt="J'ai oublié mon mot de passe et mes identifiants">
                 <div class="carousel-caption d-none d-md-block">
                     <h3>J'ai oublié mon mot de passe</h3>
-                    <p><a href="https://www.monespacesante.fr/questions-frequentes" class="btn btn-secondary">Consulter la FAQ</a></p>
+                    <p><a href="" class="btn btn-secondary">Consulter la FAQ</a></p>
                 </div>
             </div>
         </div>
@@ -99,5 +100,16 @@ session_start();
     });
 </script>
 
+</body>
+</html>
+</ BR>
+<footer>
+<div class="container-fluid">
+    <center>
+        <p>&copy; 2024 HEALTH NORTH - Tous droits réservés.</p>
+        <p>Contactez-nous : contact@healthnorth.fr | 03 20 xx xx xx</p>
+    </center>
+</div>
+</footer>
 </body>
 </html>

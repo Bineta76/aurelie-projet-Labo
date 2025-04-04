@@ -75,14 +75,7 @@ session_start();
                       
                       
                      </td>
-                    <td>
-                      6
-                      <div class="event-container">
-                      <span class="event">Lahalle 12h45</span>
-                     
-
-
-                    </td>
+                    <td>6</td>
                     <td>7</td>
             
                 <tr>
@@ -96,7 +89,10 @@ session_start();
                     <td>9</td>
                     <td>10</td>
                     <td>11</td>
-                    <td>12</td>
+                    <td>12
+                    <div class="event-container">
+                    <span class="event">Lahalle 12h45</span>
+                    </td>
                     <td>13</td>
                     <td>14</td>
                 </tr>
@@ -178,3 +174,14 @@ session_start();
 </body>
 </html>
     
+</ BR>
+<footer>
+<div class="container-fluid">
+    <center>
+        <p>&copy; 2024 HEALTH NORTH - Tous droits réservés.</p>
+        <p>Contactez-nous : contact@healthnorth.fr | 03 20 xx xx xx</p>
+    </center>
+</div>
+</footer>
+</body>
+</html>

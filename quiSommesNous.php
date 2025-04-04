@@ -54,12 +54,10 @@ session_start();
     Découvrez nos centres médicaux partenaires,répétis stratégiquement dans toute la région:</center><br>
 
     <div style="padding-left: 650px;">
-    <li>Centre Médical St Jean</li>
+    <li>Clinique Laforet</li>
+    <li>Hopital</li>
     <li>Clinique du Parc</li>
-    <li>Hopital central</li>
-    <li>Cabinet d imagerie Bordeaux</li>
-    <li>Clinique du Bois a Lille</li>
-    <li>Roubaix</li>
+   
     </div>
 
     <center><h2>Actualités de l'hopital</h2></center>
