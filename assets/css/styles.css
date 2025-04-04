@@ -159,7 +159,32 @@ table {
   font-size: 0.8rem;
   letter-spacing: 3px;
 }
+<!-- CALENDRIER-->
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
 
-.container-calendar{
-  min-width: 1000px;
+h1 {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 80%;
+  margin: auto;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+td {
+  height: 50px;
 }
