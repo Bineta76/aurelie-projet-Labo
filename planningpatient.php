@@ -27,6 +27,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendrier Avril 2025</title>
+    <center><img src="assets/images/labo.jpg " width="900px" heignt='500px'></center>
     <style>
         table {
             width: 100%;
@@ -161,19 +162,20 @@ session_start();
                 <tr>
                     <td>29</td>
                     <td>30</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                   
                 </tr>
+                
             </tbody>
         </table>
     </div>
 
 </body>
 </html>
-    
+<p>Jours de présences</p>
+<p> Docteur Lafarge,Dr Laville : Lundi au Jeudi (Vendredi sur Rendez-vous)</p>
+<p>Docteur Lepic : Mardi au Vendredi</p>
+
+
 </ BR>
 <footer>
 <div class="container-fluid">

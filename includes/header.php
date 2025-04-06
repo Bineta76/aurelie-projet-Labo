@@ -24,7 +24,8 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
         <a <?=$_SERVER['PHP_SELF'] == '/liste_des_Rdv.php' ? ' class="active"' : ''?>href="liste_des_Rdv.php">liste_des_Rdv</a> 
         <a <?=$_SERVER['PHP_SELF'] == '/dossier_medical.php' ? ' class="active"' : ''?>href="dossier_medical.php">Dossier medical</a> 
         <a <?=$_SERVER['PHP_SELF'] == '/rdv.php' ? ' class="active"' : ''?>href="rdv.php">Créer un rendez-vous</a>
-        <a <?=$_SERVER['PHP_SELF'] == '/planningmedecin.php' ? ' class="active"' : ''?>href="planningmedecin.php">Planning</a>
+        <a <?=$_SERVER['PHP_SELF'] == '/planning.php' ? ' class="active"' : ''?>href="planning.php">PlanningDocteur</a>
+        <a <?=$_SERVER['PHP_SELF'] == '/planningpatient.php' ? ' class="active"' : ''?>href="planningpatient.php">Planning patient</a>
         <a <?=$_SERVER['PHP_SELF'] == '/centre.php' ? ' class="active"' : ''?>href="centre.php">Liste des centres</a>
         <a <?=$_SERVER['PHP_SELF'] == '/contactSupport.php' ? ' class="active"' : ''?>href="contactSupport.php">Aide</a>
     </nav>
