@@ -1,98 +1,122 @@
 <?php
-// Connexion à MySQL avec gestion des erreurs
+include 'includes/header.php';
+session_start();
+
+// Connexion à MySQL
 try {
     $pdo = new PDO('mysql:host=localhost;dbname=labo;charset=utf8', 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Erreur de connexion : " . $e->getMessage());
+    die("<p style='color:red;'>Erreur de connexion à la base de données : " . htmlspecialchars($e->getMessage()) . "</p>");
 }
 
-// Définition du mois et de l'année avec navigation
-$mois = isset($_GET['mois']) ? intval($_GET['mois']) : date('m');
-$annee = isset($_GET['annee']) ? intval($_GET['annee']) : date('Y');
-$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $mois, $annee);
+// Définition de l'année et des mois
+$annee = 2025;
+$nombre_mois_suivants = 2;
 
-// Formatage du nom du mois en français
-$formatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-$monthName = ucfirst($formatter->format(new DateTime("$annee-$mois-01")));
+// Initialisation des formatteurs de date en français
+$formatterMois = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+$formatterJour = new IntlDateFormatter('fr_FR', IntlDateFormatter::FULL, IntlDateFormatter::NONE); // Format complet en français
 
-// Récupération des événements du mois
-$stmt = $pdo->prepare("SELECT date, title FROM events WHERE MONTH(date) = :mois AND YEAR(date) = :annee");
-$stmt->execute(['mois' => $mois, 'annee' => $annee]);
-$events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Tableau des jours de la semaine
+$joursSemaine = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
-// Stocker les événements dans un tableau indexé par date
-$eventList = [];
-foreach ($events as $event) {
-    $eventList[$event['date']] = htmlspecialchars($event['title']);
-}
+// Définition des couleurs par type d'événement
+$couleursEvenements = [
+    "Docteur Lepic" => "red",
+    "Docteur Lafarge" => "blue",
+    "Docteur Laville" => "purple",
+    "Docteur Leparc" => "orange"
+];
 
-// Affichage du calendrier
-echo "<h2>Calendrier de $monthName $annee</h2>";
-echo "<ul style='list-style-type:none; padding:0;'>";
+// Styles CSS
+echo "<style>
+    table { width: 100%; text-align: center; border-collapse: collapse; }
+    th { background-color: #3f51b5; color: white; padding: 10px; }
+    td { padding: 10px; border: 1px solid #ccc; }
+    .weekend { background-color: #ffcccc; }
+    .event-day { background-color: #ccffcc; }
+</style>";
 
-for ($day = 1; $day <= $daysInMonth; $day++) {
-    $date = sprintf('%04d-%02d-%02d', $annee, $mois, $day);
-    $dayName = ucfirst($formatter->format(new DateTime($date)));
-
-    // Définition de la couleur des jours (rouge pour le week-end)
-    $couleur = in_array(date('N', strtotime($date)), [6, 7]) ? 'red' : 'black';
-
-    echo "<li style='padding:10px; border-bottom:1px solid #ccc;'>";
-    echo "<strong style='color:$couleur;'>$dayName $day</strong>";
-
-    // Afficher les événements s'il y en a
-    if (isset($eventList[$date])) {
-        echo "<br><span style='color:blue;'>" . $eventList[$date] . "</span>";
-    }
-
-    echo "</li>";
-}
-
-echo "</ul>";
-
-// Liens de navigation entre les mois
-echo "<a href='?mois=" . ($mois - 1) . "&annee=$annee'>← Mois précédent</a> | ";
-echo "<a href='?mois=" . ($mois + 1) . "&annee=$annee'>Mois suivant →</a>";
-?>
-
-<!-- Formulaire pour sélectionner un mois -->
-<h3>Choisir un mois</h3>
-<form method="GET" action="">
-    <label>Choisir un mois :</label>
-    <select name="mois">
-        <?php for ($m = 1; $m <= 12; $m++) { ?>
-            <option value="<?= $m ?>" <?= ($m == $mois) ? 'selected' : '' ?>>
-                <?= ucfirst((new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE))->format(new DateTime("2025-$m-01"))) ?>
-            </option>
-        <?php } ?>
-    </select>
-    
-    <label>Année :</label>
-    <input type="number" name="annee" value="<?= $annee ?>" min="2000" max="2100">
-    <button type="submit">Afficher</button>
-</form>
-
-<!-- Formulaire pour ajouter un événement -->
-<h3>Ajouter un événement</h3>
-<form action="add_event.php" method="post">
-    <label>Date :</label>
-    <input type="date" name="date" required>
-    <label>Titre :</label>
-    <input type="text" name="title" required>
-    <button type="submit">Ajouter</button>
-</form>
-
-<?php
-// Script pour ajouter un événement
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Fonction pour récupérer les événements
+function getEvents($pdo, $mois, $annee) {
     try {
-        $stmt = $pdo->prepare("INSERT INTO events (date, title) VALUES (:date, :title)");
-        $stmt->execute(['date' => $_POST['date'], 'title' => $_POST['title']]);
-        header("Location: calendrier.php"); // Redirection vers le calendrier
-        exit();
+        $stmt = $pdo->prepare("SELECT date, time, title FROM events WHERE MONTH(date) = :mois AND YEAR(date) = :annee");
+        $stmt->execute(['mois' => $mois, 'annee' => $annee]);
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $eventList = [];
+        foreach ($events as $event) {
+            $eventList[$event['date']] = [
+                'time' => htmlspecialchars($event['time']),
+                'title' => htmlspecialchars($event['title'])
+            ];
+        }
+        return $eventList;
     } catch (PDOException $e) {
-        die("Erreur d'insertion : " . $e->getMessage());
+        echo "<p style='color:red;'>Erreur lors de la récupération des événements : " . htmlspecialchars($e->getMessage()) . "</p>";
+        return [];
     }
+}
+
+// Fonction pour afficher le calendrier
+function afficherCalendrierMois($mois, $annee, $formatterMois, $formatterJour, $pdo, $joursSemaine, $couleursEvenements) {
+    $monthName = ucfirst($formatterMois->format(new DateTime("$annee-$mois-01")));
+    $events = getEvents($pdo, $mois, $annee);
+
+    // Vérification du premier jour du mois en français
+    echo "<p>Premier jour du mois ($mois/$annee) : " . $formatterJour->format(new DateTime("$annee-$mois-01")) . "</p>";
+
+    echo "<h2 style='margin-top: 20px;'>Calendrier de $monthName</h2>";
+    echo "<table><tr>";
+
+    foreach ($joursSemaine as $jour) {
+        echo "<th>$jour</th>";
+    }
+    echo "</tr><tr>";
+
+    for ($day = 1; $day <= cal_days_in_month(CAL_GREGORIAN, $mois, $annee); $day++) {
+        $date = sprintf('%04d-%02d-%02d', $annee, $mois, $day);
+        $jourNumero = date('N', strtotime($date));
+
+        // Ajout des classes CSS
+        $classeJour = in_array($jourNumero, [6, 7]) ? "weekend" : "";
+        if (isset($events[$date])) {
+            $classeJour .= " event-day";
+        }
+
+        echo "<td class='$classeJour'>$day<br>";
+
+        // Affichage des événements avec couleur
+        if (isset($events[$date])) {
+            $titreEvent = $events[$date]['title'];
+            $couleurEvent = "black";
+
+            foreach ($couleursEvenements as $type => $couleur) {
+                if (stripos($titreEvent, $type) !== false) {
+                    $couleurEvent = $couleur;
+                    break;
+                }
+            }
+
+            echo "<br><span style='color:$couleurEvent; font-weight:bold;'>📅 {$events[$date]['time']} - $titreEvent</span>";
+        }
+
+        echo "</td>";
+
+        if ($jourNumero == 7) {
+            echo "</tr><tr>";
+        }
+    }
+    echo "</tr></table>";
+}
+
+// Affichage des mois précédents, actuels et suivants
+afficherCalendrierMois(date("m", strtotime("-1 month")), $annee, $formatterMois, $formatterJour, $pdo, $joursSemaine, $couleursEvenements);
+afficherCalendrierMois(date("m"), $annee, $formatterMois, $formatterJour, $pdo, $joursSemaine, $couleursEvenements);
+
+
+for ($i = 1; $i <= $nombre_mois_suivants; $i++) {
+    afficherCalendrierMois(date("m", strtotime("+$i month")), $annee, $formatterMois, $formatterJour, $pdo, $joursSemaine, $couleursEvenements);
 }
 ?>
