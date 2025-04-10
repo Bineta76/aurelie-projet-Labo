@@ -1,122 +1,108 @@
 <?php
-include 'includes/header.php';
-session_start();
+// Connexion DB avec gestion des erreurs
+$pdo = new PDO("mysql:host=localhost;dbname=labo", "root", "", [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+]);
 
-// Connexion à MySQL
+// Mois/année actuels
+$mois = date('m');
+$annee = date('Y');
+$nbJours = cal_days_in_month(CAL_GREGORIAN, $mois, $annee);
+$premierJour = date('N', strtotime("$annee-$mois-01"));
+
+// Récupérer rendez-vous
+$debutMois = "$annee-$mois-01";
+$finMois = "$annee-$mois-$nbJours";
+
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=labo;charset=utf8', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt = $pdo->prepare("SELECT * FROM events WHERE date_colonne BETWEEN :debut AND :fin");
+    $stmt->execute([
+        ':debut' => $debutMois,
+        ':fin' => $finMois
+    ]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Afficher un message si aucun résultat n'est trouvé
+    if (empty($result)) {
+        echo "Aucun résultat trouvé.";
+    } else {
+        print_r($result);
+    }
 } catch (PDOException $e) {
-    die("<p style='color:red;'>Erreur de connexion à la base de données : " . htmlspecialchars($e->getMessage()) . "</p>");
+    echo "Erreur SQL : " . $e->getMessage();
 }
+?>
+    
+   
 
-// Définition de l'année et des mois
-$annee = 2025;
-$nombre_mois_suivants = 2;
-
-// Initialisation des formatteurs de date en français
-$formatterMois = new IntlDateFormatter('fr_FR', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-$formatterJour = new IntlDateFormatter('fr_FR', IntlDateFormatter::FULL, IntlDateFormatter::NONE); // Format complet en français
-
-// Tableau des jours de la semaine
-$joursSemaine = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-
-// Définition des couleurs par type d'événement
-$couleursEvenements = [
-    "Docteur Lepic" => "red",
-    "Docteur Lafarge" => "blue",
-    "Docteur Laville" => "purple",
-    "Docteur Leparc" => "orange"
-];
-
-// Styles CSS
-echo "<style>
-    table { width: 100%; text-align: center; border-collapse: collapse; }
-    th { background-color: #3f51b5; color: white; padding: 10px; }
-    td { padding: 10px; border: 1px solid #ccc; }
-    .weekend { background-color: #ffcccc; }
-    .event-day { background-color: #ccffcc; }
-</style>";
-
-// Fonction pour récupérer les événements
-function getEvents($pdo, $mois, $annee) {
-    try {
-        $stmt = $pdo->prepare("SELECT date, time, title FROM events WHERE MONTH(date) = :mois AND YEAR(date) = :annee");
-        $stmt->execute(['mois' => $mois, 'annee' => $annee]);
-        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $eventList = [];
-        foreach ($events as $event) {
-            $eventList[$event['date']] = [
-                'time' => htmlspecialchars($event['time']),
-                'title' => htmlspecialchars($event['title'])
-            ];
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendrier Bootstrap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .calendar-cell {
+            height: 120px;
+            border: 1px solid #dee2e6;
+            padding: 5px;
+            overflow-y: auto;
         }
-        return $eventList;
-    } catch (PDOException $e) {
-        echo "<p style='color:red;'>Erreur lors de la récupération des événements : " . htmlspecialchars($e->getMessage()) . "</p>";
-        return [];
-    }
-}
-
-// Fonction pour afficher le calendrier
-function afficherCalendrierMois($mois, $annee, $formatterMois, $formatterJour, $pdo, $joursSemaine, $couleursEvenements) {
-    $monthName = ucfirst($formatterMois->format(new DateTime("$annee-$mois-01")));
-    $events = getEvents($pdo, $mois, $annee);
-
-    // Vérification du premier jour du mois en français
-    echo "<p>Premier jour du mois ($mois/$annee) : " . $formatterJour->format(new DateTime("$annee-$mois-01")) . "</p>";
-
-    echo "<h2 style='margin-top: 20px;'>Calendrier de $monthName</h2>";
-    echo "<table><tr>";
-
-    foreach ($joursSemaine as $jour) {
-        echo "<th>$jour</th>";
-    }
-    echo "</tr><tr>";
-
-    for ($day = 1; $day <= cal_days_in_month(CAL_GREGORIAN, $mois, $annee); $day++) {
-        $date = sprintf('%04d-%02d-%02d', $annee, $mois, $day);
-        $jourNumero = date('N', strtotime($date));
-
-        // Ajout des classes CSS
-        $classeJour = in_array($jourNumero, [6, 7]) ? "weekend" : "";
-        if (isset($events[$date])) {
-            $classeJour .= " event-day";
+        .rdv {
+            background-color: #e0f7fa;
+            border-left: 3px solid #007bff;
+            padding: 3px 5px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .day-number {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="container my-4">
+    <h2 class="mb-4 text-center">Calendrier - <?php echo date('F Y'); ?></h2>
+    <div class="row fw-bold text-center mb-2">
+        <?php
+        $jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        foreach ($jours as $jour) {
+            echo "<div class='col border'>$jour</div>";
+        }
+        ?>
+    </div>
+    <div class="row">
+        <?php
+        // Cases vides avant le 1er jour
+        for ($i = 1; $i < $premierJour; $i++) {
+            echo "<div class='col calendar-cell'></div>";
         }
 
-        echo "<td class='$classeJour'>$day<br>";
+        $jourSemaine = $premierJour;
+        for ($jour = 1; $jour <= $nbJours; $jour++, $jourSemaine++) {
+            echo "<div class='col calendar-cell'>";
+            echo "<div class='day-number'>$jour</div>";
 
-        // Affichage des événements avec couleur
-        if (isset($events[$date])) {
-            $titreEvent = $events[$date]['title'];
-            $couleurEvent = "black";
-
-            foreach ($couleursEvenements as $type => $couleur) {
-                if (stripos($titreEvent, $type) !== false) {
-                    $couleurEvent = $couleur;
-                    break;
+            if (isset($rendezvousParJour[$jour])) {
+                foreach ($rendezvousParJour[$jour] as $rdv) {
+                    echo "<div class='rdv'>{$rdv['heure']} - {$rdv['titre']}</div>";
                 }
             }
 
-            echo "<br><span style='color:$couleurEvent; font-weight:bold;'>📅 {$events[$date]['time']} - $titreEvent</span>";
+            echo "</div>";
+
+            if ($jourSemaine % 7 == 0) {
+                echo "</div><div class='row'>";
+            }
         }
 
-        echo "</td>";
-
-        if ($jourNumero == 7) {
-            echo "</tr><tr>";
+        // Cases vides après le dernier jour
+        while ($jourSemaine % 7 != 1) {
+            echo "<div class='col calendar-cell'></div>";
+            $jourSemaine++;
         }
-    }
-    echo "</tr></table>";
-}
-
-// Affichage des mois précédents, actuels et suivants
-afficherCalendrierMois(date("m", strtotime("-1 month")), $annee, $formatterMois, $formatterJour, $pdo, $joursSemaine, $couleursEvenements);
-afficherCalendrierMois(date("m"), $annee, $formatterMois, $formatterJour, $pdo, $joursSemaine, $couleursEvenements);
-
-
-for ($i = 1; $i <= $nombre_mois_suivants; $i++) {
-    afficherCalendrierMois(date("m", strtotime("+$i month")), $annee, $formatterMois, $formatterJour, $pdo, $joursSemaine, $couleursEvenements);
-}
-?>
+        ?>
+    </div>
+</body>
+</html>
