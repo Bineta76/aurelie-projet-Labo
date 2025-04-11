@@ -1,4 +1,7 @@
 <?php
+include 'includes/header.php';
+session_start();
+
 // Connexion DB avec gestion des erreurs
 $pdo = new PDO("mysql:host=localhost;dbname=labo", "root", "", [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
@@ -10,12 +13,24 @@ $annee = date('Y');
 $nbJours = cal_days_in_month(CAL_GREGORIAN, $mois, $annee);
 $premierJour = date('N', strtotime("$annee-$mois-01"));
 
+$mois = $mois -1;
 // Récupérer rendez-vous
 $debutMois = "$annee-$mois-01";
 $finMois = "$annee-$mois-$nbJours";
 
+
+
+$date = new DateTime();
+$date->modify('-1 month');
+
+$mois_fr = [
+    1 => 'janvier', 'février', 'Mars', 'avril', 'mai', 'juin',
+    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
+];
+
+
 try {
-    $stmt = $pdo->prepare("SELECT * FROM events WHERE date_colonne BETWEEN :debut AND :fin");
+    $stmt = $pdo->prepare("SELECT * FROM events WHERE `date` BETWEEN :debut AND :fin");
     $stmt->execute([
         ':debut' => $debutMois,
         ':fin' => $finMois
@@ -26,16 +41,29 @@ try {
     if (empty($result)) {
         echo "Aucun résultat trouvé.";
     } else {
-        print_r($result);
+       # print_r($result);
     }
 } catch (PDOException $e) {
     echo "Erreur SQL : " . $e->getMessage();
 }
 ?>
-    
-   
+Rdv 1 : Dr test - date 2025-03-01 ;
+Rdv 2 : Dr Lepic -date 2025-03-25;
+Rdv 3 : Dr Lepic - date 2025-03-22;
+Rdv 4 : Dr Lafarge - date 2025-03-22;
+Rdv 5 : Dr Lafarge  - date 2025-03-21;0
+Rdv 6 :  Dr Lafarge- date 2025-03-21:
+Rdv 7 : Dr Lepic - date 2025-03-05;
+Rdv 8: Dr Lepic -date 2025-03-12;
+Rdv 9: Dr Laville - date 2025-03-07;
+Rdv 10: Dr Larfarge - date 2025-03-15;
+Rdv 11: Dr Lepic - date 2025-03-16;
+Rdv 12:Dr Lafarge - date 2025-03-17;
+Rdv 13:Dr Lafarge - date 2025-03-18;
+Rdv 14: Dr Lepic - date 2025-04-01;
+Rdv 15: Dr Lafarge - date 2025-03-27;
 
-?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -63,7 +91,7 @@ try {
     </style>
 </head>
 <body class="container my-4">
-    <h2 class="mb-4 text-center">Calendrier - <?php echo date('F Y'); ?></h2>
+    <h2 class="mb-4 text-center">Calendrier - <?php echo $mois_fr[(int)$date->format('n')] . ' ' . $date->format('Y'); ?></h2>
     <div class="row fw-bold text-center mb-2">
         <?php
         $jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -77,6 +105,7 @@ try {
         // Cases vides avant le 1er jour
         for ($i = 1; $i < $premierJour; $i++) {
             echo "<div class='col calendar-cell'></div>";
+          
         }
 
         $jourSemaine = $premierJour;
