@@ -1,11 +1,8 @@
+📁 1. calendrier_bootstrap.php
 <?php
 include 'includes/header.php';
 session_start();
-
-// Connexion DB avec gestion des erreurs
-$pdo = new PDO("mysql:host=localhost;dbname=labo", "root", "", [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-]);
+$pdo = new PDO("mysql:host=localhost;dbname=labo;charset=utf8", "root", "");
 
 // Mois/année actuels
 $mois = date('m');
@@ -13,57 +10,19 @@ $annee = date('Y');
 $nbJours = cal_days_in_month(CAL_GREGORIAN, $mois, $annee);
 $premierJour = date('N', strtotime("$annee-$mois-01"));
 
-$mois = $mois -1;
-// Récupérer rendez-vous
+// Récupération des rendez-vous
 $debutMois = "$annee-$mois-01";
 $finMois = "$annee-$mois-$nbJours";
 
+$stmt = $pdo->prepare("SELECT * FROM rdv WHERE date BETWEEN :debut AND :fin");
+$stmt->execute([':debut' => $debutMois, ':fin' => $finMois]);
 
-
-$date = new DateTime();
-$date->modify('-1 month');
-
-$mois_fr = [
-    1 => 'janvier', 'février', 'Mars', 'avril', 'mai', 'juin',
-    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
-];
-
-
-try {
-    $stmt = $pdo->prepare("SELECT * FROM events WHERE `date` BETWEEN :debut AND :fin");
-    $stmt->execute([
-        ':debut' => $debutMois,
-        ':fin' => $finMois
-    ]);
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Afficher un message si aucun résultat n'est trouvé
-    if (empty($result)) {
-        echo "Aucun résultat trouvé.";
-    } else {
-       # print_r($result);
-    }
-} catch (PDOException $e) {
-    echo "Erreur SQL : " . $e->getMessage();
+$rendezvousParJour = [];
+while ($rdv = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $jour = date('j', strtotime($rdv['date']));
+    $rendezvousParJour[$jour][] = $rdv;
 }
 ?>
-Rdv 1 : Dr test - date 2025-03-01 ;
-Rdv 2 : Dr Lepic -date 2025-03-25;
-Rdv 3 : Dr Lepic - date 2025-03-22;
-Rdv 4 : Dr Lafarge - date 2025-03-22;
-Rdv 5 : Dr Lafarge  - date 2025-03-21;0
-Rdv 6 :  Dr Lafarge- date 2025-03-21:
-Rdv 7 : Dr Lepic - date 2025-03-05;
-Rdv 8: Dr Lepic -date 2025-03-12;
-Rdv 9: Dr Laville - date 2025-03-07;
-Rdv 10: Dr Larfarge - date 2025-03-15;
-Rdv 11: Dr Lepic - date 2025-03-16;
-Rdv 12:Dr Lafarge - date 2025-03-17;
-Rdv 13:Dr Lafarge - date 2025-03-18;
-Rdv 14: Dr Lepic - date 2025-04-01;
-Rdv 15: Dr Lafarge - date 2025-03-27;
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -72,7 +31,7 @@ Rdv 15: Dr Lafarge - date 2025-03-27;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .calendar-cell {
-            height: 120px;
+            height: 150px;
             border: 1px solid #dee2e6;
             padding: 5px;
             overflow-y: auto;
@@ -80,7 +39,7 @@ Rdv 15: Dr Lafarge - date 2025-03-27;
         .rdv {
             background-color: #e0f7fa;
             border-left: 3px solid #007bff;
-            padding: 3px 5px;
+            padding: 5px;
             margin-bottom: 4px;
             border-radius: 4px;
             font-size: 0.85em;
@@ -91,7 +50,8 @@ Rdv 15: Dr Lafarge - date 2025-03-27;
     </style>
 </head>
 <body class="container my-4">
-    <h2 class="mb-4 text-center">Calendrier - <?php echo $mois_fr[(int)$date->format('n')] . ' ' . $date->format('Y'); ?></h2>
+    <h2 class="mb-4 text-center">Calendrier des rendez-vous - <?php echo "$mois/$annee"; ?></h2>
+
     <div class="row fw-bold text-center mb-2">
         <?php
         $jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -100,12 +60,12 @@ Rdv 15: Dr Lafarge - date 2025-03-27;
         }
         ?>
     </div>
+
     <div class="row">
         <?php
         // Cases vides avant le 1er jour
         for ($i = 1; $i < $premierJour; $i++) {
             echo "<div class='col calendar-cell'></div>";
-          
         }
 
         $jourSemaine = $premierJour;
@@ -115,7 +75,10 @@ Rdv 15: Dr Lafarge - date 2025-03-27;
 
             if (isset($rendezvousParJour[$jour])) {
                 foreach ($rendezvousParJour[$jour] as $rdv) {
-                    echo "<div class='rdv'>{$rdv['heure']} - {$rdv['titre']}</div>";
+                    echo "<div class='rdv'>
+                            <div>{$rdv['heure']} - {$rdv['titre']} ({$rdv['nom']})</div>
+                            <a href='supprimer.php?id={$rdv['id']}' class='btn btn-sm btn-danger mt-1' onclick=\"return confirm('Supprimer ce rendez-vous ?')\">Supprimer</a>
+                          </div>";
                 }
             }
 
@@ -126,7 +89,7 @@ Rdv 15: Dr Lafarge - date 2025-03-27;
             }
         }
 
-        // Cases vides après le dernier jour
+        // Cases vides à la fin
         while ($jourSemaine % 7 != 1) {
             echo "<div class='col calendar-cell'></div>";
             $jourSemaine++;
@@ -135,3 +98,109 @@ Rdv 15: Dr Lafarge - date 2025-03-27;
     </div>
 </body>
 </html>
+📁 2. ajouter.php
+<?php
+ob_start();
+$pdo = new PDO("mysql:host=localhost;dbname=labo;charset=utf8", "root", "");
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $titre = $_POST['titre'] ?? '';
+    $date = $_POST['date'] ?? '';
+    $heure = $_POST['heure'] ?? '';
+    $nom = $_POST['nom'] ?? '';
+
+    if (!empty($titre) && !empty($date) && !empty($heure) && !empty($nom)) {
+        $dateFormat = 'Y-m-d';
+        $d = DateTime::createFromFormat($dateFormat, $date);
+        if ($d && $d->format($dateFormat) === $date) {
+            $stmt = $pdo->prepare("INSERT INTO rdv (titre, date, heure, nom) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$titre, $date, $heure, $nom]);
+
+            // Vérification avant d'effectuer la redirection
+            if (!headers_sent()) {
+                header("Location: calendrier_bootstrap.php");
+                exit;
+            } else {
+                echo "Erreur : Les en-têtes ont déjà été envoyés.";
+            }
+        } else {
+            echo "Erreur : La date est invalide.";
+        }
+    } else {
+        echo "Tous les champs doivent être remplis.";
+    }
+}
+ob_end_flush();
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un rendez-vous</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container my-4">
+    <h2 class="mb-4">Ajouter un rendez-vous</h2>
+    <form method="POST" class="row g-3">
+        <div class="col-md-3">
+            <label for="titre" class="form-label">Titre</label>
+            <input type="text" class="form-control" id="titre" name="titre" required>
+        </div>
+        <div class="col-md-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date" required>
+        </div>
+        <div class="col-md-3">
+            <label for="heure" class="form-label">Heure</label>
+            <input type="time" class="form-control" id="heure" name="heure" required>
+        </div>
+        <div class="col-md-3">
+            <label for="nom" class="form-label">Nom</label>
+            <input type="text" class="form-control" id="nom" name="nom" required>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-success">Ajouter</button>
+            <a href="calendrier_bootstrap.php" class="btn btn-secondary">Retour</a>
+        </div>
+    </form>
+</body>
+</html>
+
+📁 3. supprimer.php
+<?php
+// Démarre la mise en tampon de sortie (ob_start) au tout début
+ob_start();
+
+try {
+    $pdo = new PDO("mysql:host=localhost;dbname=labo;charset=utf8", "root", "");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    echo "Erreur de connexion : " . $e->getMessage();
+    exit;
+}
+
+// Traitement de la suppression
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+    if ($id > 0) {
+        $stmt = $pdo->prepare("DELETE FROM rdv WHERE id = ?");
+        $stmt->execute([$id]);
+    } else {
+        echo "ID invalide.";
+        exit;
+    }
+} else {
+    echo "Aucun ID fourni.";
+    exit;
+}
+
+// Redirection après la suppression, après que tout le traitement est terminé
+if (!headers_sent()) {
+    header("Location: calendrier_bootstrap.php");
+    exit;
+} else {
+    echo "Erreur : Les en-têtes ont déjà été envoyés.";
+}
+
+ob_end_flush();
