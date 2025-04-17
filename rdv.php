@@ -73,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Préparer et exécuter la requête SQL pour insérer le rendez-vous
-        $sql = "INSERT INTO rdv (heure_de_debut, id_medecin, id_examen, id_cabinet_medical) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO rdv (id_medecin, id_examen, id_cabinet_medical) VALUES (?, ?, ?)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$dateDebut, $idMedecin, $idExamen, $cabinetMedical]);
+        $stmt->execute([$idMedecin, $idExamen, $cabinetMedical]);
 
         echo "Rendez-vous enregistré avec succès !";
     } catch (PDOException $e) {
