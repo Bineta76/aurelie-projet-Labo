@@ -176,30 +176,34 @@ try {
     $pdo = new PDO("mysql:host=localhost;dbname=labo;charset=utf8", "root", "");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo "Erreur de connexion : " . $e->getMessage();
-    exit;
+    die("Erreur de connexion : " . $e->getMessage());
 }
 
-// Traitement de la suppression
-if (isset($_GET['id'])) {
+// Vérification de l'existence de l'ID avant de procéder à la suppression
+if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
     $id = intval($_GET['id']);
-    if ($id > 0) {
+
+    // Vérification supplémentaire de l'existence de l'entrée
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM rdv WHERE id = ?");
+    $stmt->execute([$id]);
+    $count = $stmt->fetchColumn();
+
+    if ($count > 0) {
         $stmt = $pdo->prepare("DELETE FROM rdv WHERE id = ?");
         $stmt->execute([$id]);
-    } else {
-        echo "ID invalide.";
+
+        // Redirection après suppression
+        header("Location: /calendrier_bootstrap.php");
         exit;
+    } else {
+        echo "ID introuvable.";
     }
 } else {
-    echo "Aucun ID fourni.";
-    exit;
+    echo "ID invalide ou non fourni.";
 }
 
-// Redirection après la suppression, après que tout le traitement est terminé
-if (!headers_sent()) {
-    header("Location: calendrier_bootstrap.php");
-    exit;
-} else {
+// Vérification si les en-têtes ont déjà été envoyés
+if (headers_sent()) {
     echo "Erreur : Les en-têtes ont déjà été envoyés.";
 }
 
