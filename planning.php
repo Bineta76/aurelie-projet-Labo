@@ -23,6 +23,7 @@ while ($rdv = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $rendezvousParJour[$jour][] = $rdv;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -42,7 +43,7 @@ while ($rdv = $stmt->fetch(PDO::FETCH_ASSOC)) {
             padding: 5px;
             margin-bottom: 4px;
             border-radius: 4px;
-            font-size: 0.85em;
+            foat-size: 0.85em;
         }
         .day-number {
             font-weight: bold;
@@ -98,6 +99,7 @@ while ($rdv = $stmt->fetch(PDO::FETCH_ASSOC)) {
     </div>
 </body>
 </html>
+?>
 📁 2. ajouter.php
 <?php
 ob_start();
@@ -166,35 +168,43 @@ ob_end_flush();
     </form>
 </body>
 </html>
+?>
 
 📁 3. supprimer.php
 <?php
-// Démarre la mise en tampon de sortie (ob_start) au tout début
+// Démarre la mise en tampon de sortie dès le début
 ob_start();
 
 try {
     $pdo = new PDO("mysql:host=localhost;dbname=labo;charset=utf8", "root", "");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
+    // Affiche un message clair et arrête le script en cas d’erreur
     die("Erreur de connexion : " . $e->getMessage());
 }
 
-// Vérification de l'existence de l'ID avant de procéder à la suppression
+// Vérifie que l’ID est présent et numérique
 if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
     $id = intval($_GET['id']);
 
-    // Vérification supplémentaire de l'existence de l'entrée
+    // Vérifie si l’ID existe dans la base
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM rdv WHERE id = ?");
     $stmt->execute([$id]);
     $count = $stmt->fetchColumn();
 
     if ($count > 0) {
+        // Supprime le rendez-vous
         $stmt = $pdo->prepare("DELETE FROM rdv WHERE id = ?");
         $stmt->execute([$id]);
 
-        // Redirection après suppression
-        header("Location: /calendrier_bootstrap.php");
-        exit;
+        // Redirige vers la page calendrier si les en-têtes ne sont pas encore envoyés
+        if (!headers_sent()) {
+            header("Location: ./calendrier_bootstrap.php");
+
+            exit;
+        } else {
+            echo "Erreur : Impossible de rediriger, les en-têtes sont déjà envoyés.";
+        }
     } else {
         echo "ID introuvable.";
     }
@@ -202,9 +212,6 @@ if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
     echo "ID invalide ou non fourni.";
 }
 
-// Vérification si les en-têtes ont déjà été envoyés
-if (headers_sent()) {
-    echo "Erreur : Les en-têtes ont déjà été envoyés.";
-}
-
+// Fin du tampon
 ob_end_flush();
+?>
