@@ -1,104 +1,100 @@
-<?php
-session_start();
+ù<?php
 include 'includes/header.php';
-include 'includes/db.php'; // Connexion à la base de données
+session_start();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Récupération et validation des données du formulaire
-    $nom = htmlspecialchars(trim($_POST['nom']));
-    $prenom = htmlspecialchars(trim($_POST['prénom'])); // Correction du nom du champ
-    $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
-    $numerodesecuritesociale = htmlspecialchars(trim($_POST['numerodesecuritesociale']));
-    $mdp = trim($_POST['mdp']);
-    
-    // Vérification des champs obligatoires
-    if (!$nom || !$prenom || !$email || !$numerodesecuritesociale || !$mdp) {
-        $_SESSION['message_error'] = "Tous les champs sont obligatoires.";
-        header("Location: inscription.php");
-        exit();
-    }
-    
-    // Vérification de la validité du numéro de sécurité sociale
-    if (!preg_match('/^[0-9]{15}$/', $numerodesecuritesociale)) {
-        $_SESSION['message_error'] = "Le numéro de sécurité sociale doit contenir exactement 15 chiffres.";
-        header("Location: inscription.php");
-        exit();
-    }
-    
-    // Vérification de la longueur du mot de passe
-    if (strlen($mdp) < 8) {
-        $_SESSION['message_error'] = "Le mot de passe doit contenir au moins 8 caractères.";
-        header("Location: inscription.php");
-        exit();
-    }
-    
-    // Hachage du mot de passe sécurisé
-    $mdp_hashed = password_hash($mdp, PASSWORD_BCRYPT);
 
-    // Vérification des doublons (email ou numéro de sécurité sociale déjà utilisé)
-    $stmt = $pdo->prepare("SELECT id FROM patient WHERE email = :email OR numero_de_securite_sociale = :nss");
-    $stmt->execute([':email' => $email, ':nss' => $numerodesecuritesociale]);
-    if ($stmt->rowCount() > 0) {
-        $_SESSION['message_error'] = "Cet email ou numéro de sécurité sociale est déjà utilisé.";
-        header("Location: inscription.php");
-        exit();
+// Connexion à la base de données
+$host = 'localhost';
+$db = 'labo';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+
+// Vérifier si l'utilisateur est bien connecté
+if (!isset($_SESSION['user_id'])) {
+    die("Accès interdit : utilisateur non identifié.");
+}
+
+$user_id = $_SESSION['user_id'];
+
+// Récupérer les données actuelles de l'utilisateur
+$sql = "SELECT nom, prenom, email, numerodesecuritesociale FROM users WHERE id = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$user = $stmt->fetch();
+
+// Traitement du formulaire
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Sécurisation des entrées
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+    $nss = trim($_POST['numerodesecuritesociale']);
+    $mdp = $_POST['mdp'];
+
+    // Vérifier la validité des données
+    if (!$email) {
+        die("Adresse e-mail invalide.");
     }
 
-    // Insertion des données dans la base de données
-    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mdp) VALUES (:nom, :prenom, :email, :nss, :mdp)");
-    $stmt->execute([
-        ':nom' => $nom,
-        ':prenom' => $prenom,
-        ':email' => $email,
-        ':nss' => $numerodesecuritesociale,
-        ':mdp' => $mdp_hashed,
-    ]);
-    
-    $_SESSION['message_success'] = "Inscription réussie !";
-    header("Location: index.php");
-    exit();
+    if (!preg_match('/^[0-9]{15}$/', $nss)) {
+        die("Numéro de sécurité sociale invalide.");
+    }
+
+    // Hachage du mot de passe si modifié
+    $mdp_hash = !empty($mdp) ? password_hash($mdp, PASSWORD_DEFAULT) : $user['mdp'];
+
+    // Mettre à jour les données de l'utilisateur
+    $sql = "UPDATE users SET nom = ?, prenom = ?, email = ?, numerodesecuritesociale = ?, mdp = ? WHERE id = ?";
+    $stmt = $pdo->prepare($sql);
+
+    if ($stmt->execute([$nom, $prenom, $email, $nss, $mdp_hash, $user_id])) {
+        echo "<div class='alert alert-success'>Profil mis à jour avec succès !</div>";
+        // Rafraîchir les données après mise à jour
+        $user = ['nom' => $nom, 'prenom' => $prenom, 'email' => $email, 'numerodesecuritesociale' => $nss];
+    } else {
+        echo "<div class='alert alert-danger'>Erreur lors de la mise à jour.</div>";
+    }
 }
 ?>
 
-<div class="container mt-5">
-    <h1 class="text-center mt-4 mb-4">Inscription</h1>
-
-    <!-- Affichage des messages d'erreur/succès -->
-    <?php if (isset($_SESSION['message_error'])): ?>
-        <div class="alert alert-danger">
-            <?= $_SESSION['message_error']; unset($_SESSION['message_error']); ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_SESSION['message_success'])): ?>
-        <div class="alert alert-success">
-            <?= $_SESSION['message_success']; unset($_SESSION['message_success']); ?>
-        </div>
-    <?php endif; ?>
-
-    <form method="POST" action="inscription.php">
-        <div class="form-group mb-3">
-            <label for="nom">Nom :</label>
-            <input type="text" id="nom" name="nom" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="prénom">Prénom :</label>
-            <input type="text" id="prénom" name="prénom" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="email">Email :</label>
-            <input type="email" id="email" name="email" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="numerodesecuritesociale">Numéro de sécurité sociale :</label>
-            <input type="text" id="numerodesecuritesociale" name="numerodesecuritesociale" class="form-control" maxlength="15" required pattern="[0-9]{15}" title="Le numéro de sécurité sociale doit contenir 15 chiffres">
-        </div>
-        <div class="form-group mb-3">
-            <label for="mdp">Mot de passe :</label>
-            <input type="password" id="mdp" name="mdp" class="form-control" required minlength="8">
-        </div>
-        <button type="submit" class="btn btn-primary w-100 mt-3">S'inscrire</button>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Profil</title>
+</head>
+<body>
+    <form method="POST" action="">
+        <label>Nom :</label>
+        <input type="text" name="nom" value="<?= htmlspecialchars($user['nom']) ?>" required>
+        <br>
+        <label>Prénom :</label>
+        <input type="text" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>" required>
+        <br>
+        <label>Email :</label>
+        <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
+        <br>
+        <label>Numéro de sécurité sociale :</label>
+        <input type="text" name="numerodesecuritesociale" value="<?= htmlspecialchars($user['numerodesecuritesociale']) ?>" required pattern="\d{15}">
+        <br>
+        <label>Mot de passe (laisser vide si inchangé) :</label>
+        <input type="password" name="mdp">
+        <br>
+        <button type="submit">Mettre à jour</button>
     </form>
-</div>
-
-<?php include 'includes/footer.php'; ?>
+</body>
+</html>

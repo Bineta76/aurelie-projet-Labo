@@ -18,6 +18,7 @@
         <a <?=$_SERVER['PHP_SELF'] == '/index.php' ? ' class="active"' : ''?>href="index.php">Accueil</a>
         <a <?=$_SERVER['PHP_SELF'] == '/inscription.php' ? ' class="active"' : ''?>href="inscription.php">Inscription</a>
         <a <?=$_SERVER['PHP_SELF'] == '/quiSommesNous.php' ? ' class="active"' : ''?>href="quiSommesNous.php">Qui sommes-nous ?</a>
+        <a <?=$_SERVER['PHP_SELF'] == '/profil.php' ? ' class="active"' : ''?>href="profil.php">profil</a>
         <a <?=$_SERVER['PHP_SELF'] == '/liste_des_Rdv.php' ? ' class="active"' : ''?>href="liste_des_Rdv.php">liste_des_Rdv</a> 
         <a <?=$_SERVER['PHP_SELF'] == '/dossier_medical.php' ? ' class="active"' : ''?>href="dossier_medical.php">Dossier medical</a> 
         <a <?=$_SERVER['PHP_SELF'] == '/rdv.php' ? ' class="active"' : ''?>href="rdv.php">Créer un rendez-vous</a>
