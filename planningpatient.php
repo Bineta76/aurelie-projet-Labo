@@ -1,5 +1,7 @@
-<?php include 'includes/header.php';?>
+<?php
+include 'includes/header.php';
 session_start();
+?>
 <div class="container">
 
 <!DOCTYPE html>
@@ -26,7 +28,7 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendrier Avril 2025</title>
+    <title>Calendrier Mai 2025</title>
     <center><img src="assets/images/labo.jpg " width="900px" heignt='500px'></center>
     <style>
         table {
@@ -50,7 +52,7 @@ session_start();
 <body>
 
     <div class="calendar">
-        <h2>Calendrier - Mars 2025</h2>
+        <h2>Calendrier - Mai 2025</h2>
         <table>
             <thead>
                 <tr>
@@ -65,7 +67,10 @@ session_start();
             </thead>
             <tbody>
                 <tr>
-                    <td>1</td>
+                    <td>1
+                        <div class="event-container">
+                         <span class="event">Férié</span>   
+                    </td>
                     <td>2</td>
                     <td>3</td>
                     <td>4</td>
@@ -83,11 +88,14 @@ session_start();
                     <td>
                         8
                         <div class="event-container">
-                        <span class="event">Lalier 13h15</span>
+                         <span class="event">Férié</span> 
 
                      </td>
 
-                    <td>9</td>
+                    <td>9
+                        <div class="event-container">
+                        <span class="event">Lalier 13h15</span>
+                    </td>
                     <td>10</td>
                     <td>11</td>
                     <td>12
@@ -145,17 +153,17 @@ session_start();
 
                     </td>
                     <td>24</td>
-                    <td>
-                      25
-                      <div class="event-container">
+                    <td>25
+                        <div class="event-container">
+                         <span class="event">Férié</span> 
+                    </td>
+                    <td>26 <div class="event-container">
                       <span class="event">Monseigneur 9h15</span>
                      
                       <div class="event-container">
                       <span class="event">Peterson 11h45</span>
-                      
 
                     </td>
-                    <td>26</td>
                     <td>27</td>
                     <td>28</td>
                 </tr>

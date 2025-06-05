@@ -1,9 +1,10 @@
-ù<?php
+<?php
 include 'includes/header.php';
 session_start();
 
 
-// Connexion à la base de données
+
+// Configuration de la base de données
 $host = 'localhost';
 $db = 'labo';
 $user = 'root';
@@ -20,81 +21,74 @@ $options = [
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
-    die("Erreur de connexion : " . $e->getMessage());
+    exit("Erreur de connexion à la base de données : " . $e->getMessage());
 }
 
-// Vérifier si l'utilisateur est bien connecté
-if (!isset($_SESSION['user_id'])) {
-    die("Accès interdit : utilisateur non identifié.");
-}
+$message = "";
 
-$user_id = $_SESSION['user_id'];
-
-// Récupérer les données actuelles de l'utilisateur
-$sql = "SELECT nom, prenom, email, numerodesecuritesociale FROM users WHERE id = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$user_id]);
-$user = $stmt->fetch();
-
-// Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sécurisation des entrées
-    $nom = trim($_POST['nom']);
-    $prenom = trim($_POST['prenom']);
-    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
-    $nss = trim($_POST['numerodesecuritesociale']);
-    $mdp = $_POST['mdp'];
+    // Nettoyage des champs
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $mdp = $_POST['mdp'] ?? '';
+    $numero = preg_replace('/\D/', '', $_POST['numero_de_securite_sociale'] ?? '');
 
-    // Vérifier la validité des données
-    if (!$email) {
-        die("Adresse e-mail invalide.");
-    }
-
-    if (!preg_match('/^[0-9]{15}$/', $nss)) {
-        die("Numéro de sécurité sociale invalide.");
-    }
-
-    // Hachage du mot de passe si modifié
-    $mdp_hash = !empty($mdp) ? password_hash($mdp, PASSWORD_DEFAULT) : $user['mdp'];
-
-    // Mettre à jour les données de l'utilisateur
-    $sql = "UPDATE users SET nom = ?, prenom = ?, email = ?, numerodesecuritesociale = ?, mdp = ? WHERE id = ?";
-    $stmt = $pdo->prepare($sql);
-
-    if ($stmt->execute([$nom, $prenom, $email, $nss, $mdp_hash, $user_id])) {
-        echo "<div class='alert alert-success'>Profil mis à jour avec succès !</div>";
-        // Rafraîchir les données après mise à jour
-        $user = ['nom' => $nom, 'prenom' => $prenom, 'email' => $email, 'numerodesecuritesociale' => $nss];
+    // Vérifications
+    if (empty($nom) || empty($prenom) || empty($email) || empty($mdp) || empty($numero)) {
+        $message = "❌ Tous les champs sont obligatoires.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = "❌ Adresse email invalide.";
+    } elseif (strlen($numero) !== 15) {
+        $message = "❌ Numéro invalide : il doit contenir exactement 15 chiffres.";
     } else {
-        echo "<div class='alert alert-danger'>Erreur lors de la mise à jour.</div>";
+        $base = substr($numero, 0, 13);
+        $cle = substr($numero, 13, 2);
+
+        if (!function_exists('bcmod')) {
+            $message = "❌ Erreur : l'extension BCMath n'est pas activée sur le serveur.";
+        } else {
+            $cleAttendue = sprintf('%02d', 97 - bcmod($base, '97'));
+
+            if ($cle !== $cleAttendue) {
+                $message = "❌ Numéro invalide : clé de contrôle incorrecte.";
+            } else {
+                try {
+                    // Vérifie si l'email est déjà utilisé
+                    $verif = $pdo->prepare("SELECT id FROM patient WHERE email = ?");
+                    $verif->execute([$email]);
+                    if ($verif->fetch()) {
+                        $message = "❌ Un compte avec cet email existe déjà.";
+                    } else {
+                        // Hachage et insertion
+                        $hash = password_hash($mdp, PASSWORD_DEFAULT);
+                        $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mdp) VALUES (?, ?, ?, ?, ?)");
+                        $stmt->execute([$nom, $prenom, $email, $numero, $hash]);
+                        $message = "✅ Inscription réussie. <a href='login.php'>Se connecter</a>";
+                    }
+                } catch (PDOException $e) {
+                    $message = "❌ Erreur lors de l'inscription : " . $e->getMessage();
+                }
+            }
+        }
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Modifier Profil</title>
-</head>
-<body>
-    <form method="POST" action="">
-        <label>Nom :</label>
-        <input type="text" name="nom" value="<?= htmlspecialchars($user['nom']) ?>" required>
-        <br>
-        <label>Prénom :</label>
-        <input type="text" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>" required>
-        <br>
-        <label>Email :</label>
-        <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required>
-        <br>
-        <label>Numéro de sécurité sociale :</label>
-        <input type="text" name="numerodesecuritesociale" value="<?= htmlspecialchars($user['numerodesecuritesociale']) ?>" required pattern="\d{15}">
-        <br>
-        <label>Mot de passe (laisser vide si inchangé) :</label>
-        <input type="password" name="mdp">
-        <br>
-        <button type="submit">Mettre à jour</button>
-    </form>
-</body>
-</html>
+<!-- Formulaire HTML -->
+<form method="POST">
+    <input type="text" name="nom" placeholder="Nom" required><br>
+    <input type="text" name="prenom" placeholder="Prénom" required><br>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="text" name="numero_de_securite_sociale"
+           placeholder="Numéro de sécurité sociale"
+           pattern="\d{15}"
+           title="15 chiffres sans espaces"
+           required><br>
+    <input type="password" name="mdp" placeholder="Mot de passe" required><br>
+    <button type="submit">S’inscrire</button>
+</form>
+
+<?php if (!empty($message)): ?>
+    <p style="margin-top: 10px; font-weight: bold;"><?= $message ?></p>
+<?php endif; ?>
