@@ -88,11 +88,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Récupération des données
-$cabinetsMedical = $pdo->query("SELECT id, Nom FROM cabinet_medical")->fetchAll();
-$medecins = $pdo->query("SELECT id, Nom, Prenom FROM medecin")->fetchAll();
-$examens = $pdo->query("SELECT id, nom FROM examen")->fetchAll();
+// ✅ Récupération des données avec gestion d'erreurs et tri alphabétique
+try {
+    $cabinetsMédical = $pdo->query("SELECT id, Nom FROM cabinet_médical ORDER BY Nom")->fetchAll();
+    $médecins = $pdo->query("SELECT id, Nom, Prenom FROM médecin ORDER BY Nom, Prenom")->fetchAll();
+    $examens = $pdo->query("SELECT id, nom FROM examen ORDER BY nom")->fetchAll();
+} catch (PDOException $e) {
+    exit("Erreur lors de la récupération des données : " . htmlspecialchars($e->getMessage()));
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">

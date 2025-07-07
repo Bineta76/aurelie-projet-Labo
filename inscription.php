@@ -78,10 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- Formulaire HTML -->
 <form method="POST">
     <input type="text" name="nom" placeholder="Nom" required><br>
-    <input type="text" name="prenom" placeholder="Prénom" required><br>
+    <input type="text" name="prenom" placeholder="Prenom" required><br>
     <input type="email" name="email" placeholder="Email" required><br>
     <input type="text" name="numero_de_securite_sociale"
-           placeholder="Numéro de sécurité sociale"
+           placeholder="Numero_de_securite_sociale"
            pattern="\d{15}"
            title="15 chiffres sans espaces"
            required><br>

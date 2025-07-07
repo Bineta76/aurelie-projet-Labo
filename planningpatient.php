@@ -52,146 +52,58 @@ session_start();
 <body>
 
     <div class="calendar">
-        <h2>Calendrier - Mai 2025</h2>
+        <h2>Calendrier -Avril _ Mai 2025</h2>
         <table>
-            <thead>
-                <tr>
-                    <th>Lundi</th>
-                    <th>Mardi</th>
-                    <th>Mercredi</th>
-                    <th>Jeudi</th>
-                    <th>Vendredi</th>
-                    <th>Samedi</th>
-                    <th>Dimanche</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1
-                        <div class="event-container">
-                         <span class="event">Férié</span>   
-                    </td>
-                    <td>2</td>
-                    <td>3</td>
-                    <td>4</td>
-                    <td>
-                      5
-                      <div class="event-container">
-                      <span class="event">Couet 12h15</span>
-                      
-                      
-                     </td>
-                    <td>6</td>
-                    <td>7</td>
-            
-                <tr>
-                    <td>
-                        8
-                        <div class="event-container">
-                         <span class="event">Férié</span> 
+    <td><span>LUNDI</span></td>
+    <td><span>MARDI</span></td>
+    <td><span>MERCREDI</span></td>
+    <td><span>JEUDI</span></td>
+    <td><span>VENDREDI</span></td>
+    <td><span>SAMEDI</span></td>
+    <td><span>DIMANCHE</span></td>
+        <tr>
 
-                     </td>
+        <td><span>1</span></td>
+<td><span>2</span></td>
+<td><span>3</span></td>
+<td><span>4</span></td>
+<td><span>5_LALLIER</span></td>
+ <td><span>6</span></td>
+ <td><span>7</span></td>
 
-                    <td>9
-                        <div class="event-container">
-                        <span class="event">Lalier 13h15</span>
-                    </td>
-                    <td>10</td>
-                    <td>11</td>
-                    <td>12
-                    <div class="event-container">
-                    <span class="event">Lahalle 12h45</span>
-                    </td>
-                    <td>13</td>
-                    <td>14</td>
-                </tr>
-                <tr>
-                    <td>
-                      15
-                      <div class="event-container">
-                            <span class="event">Carlosa 13h35</span>
-                     
-                    </td>
+    </tr>
+    <tr>
+ <td><span>8</span></td>
+<td><span>9</span></td>
+<td><span>10_LAHALLE</span></td>
+<td><span>11</span></td>
+<td><span>12</span></td>
+<td><span>13</span></td>      
+  <td><span>14</span></td>
+</tr>
+    <tr>
 
-                    <td>
-                      16
-                      <div class="event-container">
-                      <span class="event">Coffret 14h15</span>
-                      
-                    </td>
+<td><span>15</span></td>
+<td><span>16</span></td>
+<td><span>17</span></td>
+<td><span>18</span></td> 
+<td><span>19</span></td>
+<td><span>20</span></td>
+<td><span>21</span></td>
+    </tr>
+    <tr>
 
-                    <td>
-                      17
-                      <div class="event-container">
-                      <span class="event">Plume 14h45</span>
-                      
-                    </td>
-                    <td>
-                        18
-                        <div class="event-container">
-                            <span class="event">Pierrot 15h15</span>
-                              
-                    <td>19</td>
-                    <td>20</td>
-                    <td>
-                      21
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                      22
-                      <div class="event-container">
-                      <span class="event">Mr Blocks 10h15</span>
-                      
-                      
-                    </td>
-                    <td>23
-                    <div class="event-container">
-                        <span class="event">Mr Peters 10h45></span>
-                        <div class="event-container">
-                        <span class="event">Mme Fleurette 11h45> </span>
-
-                    </td>
-                    <td>24</td>
-                    <td>25
-                        <div class="event-container">
-                         <span class="event">Férié</span> 
-                    </td>
-                    <td>26 <div class="event-container">
-                      <span class="event">Monseigneur 9h15</span>
-                     
-                      <div class="event-container">
-                      <span class="event">Peterson 11h45</span>
-
-                    </td>
-                    <td>27</td>
-                    <td>28</td>
-                </tr>
-                <tr>
-                    <td>29</td>
-                    <td>30</td>
-                   
-                </tr>
-                
-            </tbody>
-        </table>
-    </div>
-
-</body>
-</html>
-<p>Jours de présences</p>
-<p> Docteur Lafarge,Dr Laville : Lundi au Jeudi (Vendredi sur Rendez-vous)</p>
-<p>Docteur Lepic : Mardi au Vendredi</p>
-
-
-</ BR>
-<footer>
-<div class="container-fluid">
-    <center>
-        <p>&copy; 2024 HEALTH NORTH - Tous droits réservés.</p>
-        <p>Contactez-nous : contact@healthnorth.fr | 03 20 xx xx xx</p>
-    </center>
-</div>
-</footer>
-</body>
-</html>
+<td><span>22</span></td>
+<td><span>23</span></td> 
+<td><span>24_LOUTE</span></td>
+<td><span>25 _BINET</span></td>
+<td><span>26_DUPONT</span></td>
+<td><span>27</span></td>
+<td><span>28</span></td>
+    </tr>
+    <tr>
+<td><span>29</span></td>
+<td><span>30</span></td>
+<td><span>31</span></td>
+    </tr>
+    </table>
