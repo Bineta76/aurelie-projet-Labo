@@ -1,177 +1,169 @@
 <?php
-session_start();
 include 'includes/header.php';
+session_start();
+?>
 
+<?php
+// Afficher toutes les erreurs
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Génération d'un token CSRF si inexistant
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-// Connexion à la base de données
-$host = "localhost";
-$user = "root";
-$password = "";
-$dbname = "labo";
-
+// Connexion PDO
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password, [
+    $pdo = new PDO("mysql:host=localhost;dbname=labo;charset=utf8", "root", "", [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
 } catch (PDOException $e) {
-    exit("Erreur de connexion à la base de données : " . htmlspecialchars($e->getMessage()));
+    die("Erreur de connexion : " . $e->getMessage());
 }
 
-// Fonction de vérification d'existence d'entité
-function verifierEntite(PDO $pdo, string $table, $id): bool {
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM `$table` WHERE id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetchColumn() > 0;
-}
+// Charger données pour les <select>
+$examens = $pdo->query("SELECT id, nom FROM examen ORDER BY nom")->fetchAll();
+$medecins = $pdo->query("SELECT id, nom, prenom FROM medecin ORDER BY nom, prenom")->fetchAll();
+$cabinets = $pdo->query("SELECT id, nom_cabinet FROM cabinet_medical ORDER BY nom_cabinet")->fetchAll();
 
-// Initialisation
+$success = '';
 $errors = [];
-$successMessage = '';
-$lastDateFormatted = '';
 
-// Traitement du formulaire
+// Enregistrement d'un RDV
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        $errors[] = "Échec de la vérification CSRF.";
-    }
+    $date = $_POST['date'] ?? '';
+    $medecin = $_POST['medecin'] ?? '';
+    $examen = $_POST['examen'] ?? '';
+    $cabinet = $_POST['cabinet_medical'] ?? '';
 
-    $dateInput = $_POST['date'] ?? '';
-    $idMedecin = $_POST['medecin'] ?? '';
-    $idExamen = $_POST['type_examen'] ?? '';
-    $idCabinetMedical = $_POST['cabinet_medical'] ?? '';
-
-    if (empty($dateInput) || empty($idMedecin) || empty($idExamen) || empty($idCabinetMedical)) {
+    if (!$date || !$medecin || !$examen || !$cabinet) {
         $errors[] = "Tous les champs sont obligatoires.";
     }
 
-    $dateTime = DateTime::createFromFormat('Y-m-d\TH:i', $dateInput);
-    if (!$dateTime || $dateInput !== $dateTime->format('Y-m-d\TH:i')) {
-        $errors[] = "Format de date invalide.";
-    } else {
-        $dateFormatted = $dateTime->format('Y-m-d H:i:s'); // format BDD
-        $lastDateFormatted = $dateTime->format('d/m/Y à H:i'); // affichage humain
-    }
-
-    if (empty($errors)) {
-        if (!verifierEntite($pdo, 'cabinet_medical', $idCabinetMedical)) {
-            $errors[] = "Cabinet médical invalide.";
-        }
-
-        if (!verifierEntite($pdo, 'medecin', $idMedecin)) {
-            $errors[] = "Médecin invalide.";
-        }
-
-        if (!verifierEntite($pdo, 'examen', $idExamen)) {
-            $errors[] = "Type d'examen invalide.";
-        }
-
-        if (empty($errors)) {
-            try {
-                $stmt = $pdo->prepare("INSERT INTO rdv (`date`, id_medecin, id_examen, id_cabinet_medical) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$dateFormatted, $idMedecin, $idExamen, $idCabinetMedical]);
-                
-                // ✅ Affichage confirmation avec heure
-
-            } catch (PDOException $e) {
-                $errors[] = "Erreur lors de l'enregistrement : " . htmlspecialchars($e->getMessage());
-            }
+    if (!$errors) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO rdv (date, id_medecin, id_examen, id_cabinet_medical) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$date, $medecin, $examen, $cabinet]);
+            $success = "✅ Rendez-vous enregistré avec succès.";
+        } catch (PDOException $e) {
+            $errors[] = "Erreur SQL : " . $e->getMessage();
         }
     }
 }
 
-// ✅ Récupération des données avec gestion d'erreurs et tri alphabétique
-try {
-    $cabinetsMédical = $pdo->query("SELECT id, Nom FROM cabinet_médical ORDER BY Nom")->fetchAll();
-    $médecins = $pdo->query("SELECT id, Nom, Prenom FROM médecin ORDER BY Nom, Prenom")->fetchAll();
-    $examens = $pdo->query("SELECT id, nom FROM examen ORDER BY nom")->fetchAll();
-} catch (PDOException $e) {
-    exit("Erreur lors de la récupération des données : " . htmlspecialchars($e->getMessage()));
-}
+// Récupération des rendez-vous
+$sql = "
+    SELECT r.date, m.prenom AS prenom_medecin, m.nom AS nom_medecin,
+           e.nom AS nom_examen, c.nom_cabinet
+    FROM rdv r
+    JOIN medecin m ON r.id_medecin = m.id
+    JOIN examen e ON r.id_examen = e.id
+    JOIN cabinet_medical c ON r.id_cabinet_medical = c.id
+    ORDER BY r.date DESC
+";
+
+$rendezvous = $pdo->query($sql)->fetchAll();
 ?>
 
-
+<!-- ✅ HTML & Bootstrap -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Prise de rendez-vous</title>
+    <title>Gestion des Rendez-vous</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div class="container mt-5">
-    <h2 class="mb-4">Prendre un rendez-vous</h2>
 
-    <?php if (!empty($errors)): ?>
+<div class="container my-5">
+    <h1 class="mb-4 text-center">🩺 Gestion des Rendez-vous</h1>
+
+    <?php if ($success): ?>
+        <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+    <?php endif; ?>
+
+    <?php if ($errors): ?>
         <div class="alert alert-danger">
             <ul class="mb-0">
-                <?php foreach ($errors as $error): ?>
-                    <li><?= htmlspecialchars($error) ?></li>
+                <?php foreach ($errors as $err): ?>
+                    <li><?= htmlspecialchars($err) ?></li>
                 <?php endforeach; ?>
             </ul>
         </div>
-    <?php elseif (!empty($successMessage)): ?>
-        <div class="alert alert-success">
-            <?= $successMessage ?>
-        </div>
     <?php endif; ?>
 
-    <form method="post" class="bg-white p-4 rounded shadow-sm">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+    <!-- 📝 Formulaire de RDV -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">➕ Prendre un nouveau rendez-vous</div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Date / Heure</label>
+                        <input type="datetime-local" name="date" class="form-control" required>
+                    </div>
 
-        <div class="mb-3">
-            <label for="date" class="form-label">Date et heure</label>
-            <input type="datetime-local" class="form-control" name="date" id="date" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Médecin</label>
+                        <select name="medecin" class="form-select" required>
+                            <option value="">-- Choisir --</option>
+                            <?php foreach ($medecins as $m): ?>
+                                <option value="<?= $m['id'] ?>"><?= htmlspecialchars($m['prenom'] . ' ' . $m['nom']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Examen</label>
+                        <select name="examen" class="form-select" required>
+                            <option value="">-- Choisir --</option>
+                            <?php foreach ($examens as $e): ?>
+                                <option value="<?= $e['id'] ?>"><?= htmlspecialchars($e['nom']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Cabinet</label>
+                        <select name="cabinet_medical" class="form-select" required>
+                            <option value="">-- Choisir --</option>
+                            <?php foreach ($cabinets as $c): ?>
+                                <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['nom_cabinet']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-success">Enregistrer</button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label for="medecin" class="form-label">Médecin</label>
-            <select class="form-select" name="medecin" id="medecin" required>
-                <option value="">-- Choisir un médecin --</option>
-                <?php foreach ($medecins as $medecin): ?>
-                    <option value="<?= $medecin['id'] ?>">
-                        <?= htmlspecialchars($medecin['Prenom'] . ' ' . $medecin['Nom']) ?>
-                    </option>
+    <!-- 📋 Liste des Rendez-vous -->
+    <h2 class="mb-3">📆 Rendez-vous enregistrés</h2>
+    <?php if (!$rendezvous): ?>
+        <div class="alert alert-warning">Aucun rendez-vous trouvé.</div>
+    <?php else: ?>
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Médecin</th>
+                    <th>Examen</th>
+                    <th>Cabinet</th>
+                    <th>Date / Heure</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($rendezvous as $rdv): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($rdv['prenom_medecin'] . ' ' . $rdv['nom_medecin']) ?></td>
+                        <td><?= htmlspecialchars($rdv['nom_examen']) ?></td>
+                        <td><?= htmlspecialchars($rdv['nom_cabinet']) ?></td>
+                        <td><?= date('d/m/Y à H\hi', strtotime($rdv['date'])) ?></td>
+                    </tr>
                 <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="type_examen" class="form-label">Type d'examen</label>
-            <select class="form-select" name="type_examen" id="type_examen" required>
-                <option value="">-- Choisir un examen --</option>
-                <?php foreach ($examens as $examen): ?>
-                    <option value="<?= $examen['id'] ?>">
-                        <?= htmlspecialchars($examen['nom']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div class="mb-4">
-            <label for="cabinet_medical" class="form-label">Cabinet médical</label>
-            <select class="form-select" name="cabinet_medical" id="cabinet_medical" required>
-                <option value="">-- Choisir un cabinet --</option>
-                <?php foreach ($cabinetsMedical as $cabinet): ?>
-                    <option value="<?= $cabinet['id'] ?>">
-                        <?= htmlspecialchars($cabinet['Nom']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-    </form>
+            </tbody>
+        </table>
+    <?php endif; ?>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

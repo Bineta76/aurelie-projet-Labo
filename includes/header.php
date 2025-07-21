@@ -18,9 +18,8 @@
         <a <?=$_SERVER['PHP_SELF'] == '/index.php' ? ' class="active"' : ''?>href="index.php">Accueil</a>
         <a <?=$_SERVER['PHP_SELF'] == '/inscription.php' ? ' class="active"' : ''?>href="inscription.php">Inscription</a>
         <a <?=$_SERVER['PHP_SELF'] == '/quiSommesNous.php' ? ' class="active"' : ''?>href="quiSommesNous.php">Qui sommes-nous ?</a>
-        <a <?=$_SERVER['PHP_SELF'] == '/liste_des_Rdv.php' ? ' class="active"' : ''?>href="liste_des_Rdv.php">liste_des_Rdv</a> 
-        <a <?=$_SERVER['PHP_SELF'] == '/dossier_medical.php' ? ' class="active"' : ''?>href="dossier_medical.php">Dossier medical</a> 
-        <a <?=$_SERVER['PHP_SELF'] == '/rdv.php' ? ' class="active"' : ''?>href="rdv.php">Créer un rendez-vous</a>
+        <a <?=$_SERVER['PHP_SELF'] == '/rdv.php' ? ' class="active"' : ''?>href="rdv.php">Créer un rendez-vous</a> 
+        <a <?=$_SERVER['PHP_SELF'] == '/compte-rendu.php' ? ' class="active"' : ''?>href="compte-rendu">Compte-rendu</a>        
         <a <?=$_SERVER['PHP_SELF'] == '/planning.php' ? ' class="active"' : ''?>href="planning.php">PlanningDocteur</a>
         <a <?=$_SERVER['PHP_SELF'] == '/planningpatient.php' ? ' class="active"' : ''?>href="planningpatient.php">Planning patient</a>
         <a <?=$_SERVER['PHP_SELF'] == '/centre.php' ? ' class="active"' : ''?>href="centre.php">Liste des centres</a>
