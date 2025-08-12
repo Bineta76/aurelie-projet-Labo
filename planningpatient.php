@@ -52,7 +52,7 @@ session_start();
 <body>
 
     <div class="calendar">
-        <h2>Calendrier -Avril _ Mai 2025</h2>
+        <h2>Calendrier -Juillet 2025</h2>
         <table>
     <td><span>LUNDI</span></td>
     <td><span>MARDI</span></td>
@@ -75,7 +75,7 @@ session_start();
     <tr>
  <td><span>8</span></td>
 <td><span>9</span></td>
-<td><span>10_LAHALLE</span></td>
+<td><span>10</span></td>
 <td><span>11</span></td>
 <td><span>12</span></td>
 <td><span>13</span></td>      
