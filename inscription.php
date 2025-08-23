@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Démarrer la session en premier
+// Démarrer la session
 session_start();
 
 include 'includes/header.php';
@@ -31,6 +31,7 @@ try {
 
 $message = "";
 
+// Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom    = trim($_POST['nom'] ?? '');
     $prenom = trim($_POST['prenom'] ?? '');
@@ -65,9 +66,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 try {
                     $hash = password_hash($mdp, PASSWORD_DEFAULT);
-                    $stmt = $pdo->prepare("INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mdp) VALUES (?, ?, ?, ?, ?)");
+                    $stmt = $pdo->prepare("
+                        INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mdp) 
+                        VALUES (?, ?, ?, ?, ?)
+                    ");
                     $stmt->execute([$nom, $prenom, $email, $numero, $hash]);
-                    $message = "✅ Inscription réussie. <a href='login.php'>Se connecter</a>";
+
+                    $message = "✅ Inscription réussie, redirection...";
+                    header("Refresh:3; url=index.php");
+                    exit;
                 } catch (PDOException $e) {
                     $message = "❌ Erreur lors de l'inscription : " . $e->getMessage();
                 }
@@ -76,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>

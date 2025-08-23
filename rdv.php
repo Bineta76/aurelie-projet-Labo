@@ -192,7 +192,7 @@ try {
                 <?php foreach ($rendezvous as $rdv): ?>
                     <tr>
                         <td><?= htmlspecialchars($rdv['prenom_medecin'].' '.$rdv['nom_medecin']) ?></td>
-                        <td><?= htmlspecialchars($rdv['nom_examen']) ?></td>
+                        <td><?= htmlspecialchars($rdv['nom']) ?></td>
                         <td><?= htmlspecialchars($rdv['nom_cabinet']) ?></td>
                         <td><?= date('d/m/Y à H\hi', strtotime($rdv['date_rdv'])) ?></td>
                     </tr>

@@ -1,6 +1,6 @@
 <?php
-include 'includes/header.php';
 session_start();
+include 'includes/header.php';
 
 // Connexion à la base de données
 try {
@@ -15,33 +15,35 @@ if (isset($_GET['supprimer'])) {
     $id = intval($_GET['supprimer']);
     $stmt = $pdo->prepare("DELETE FROM bilan WHERE id = ?");
     $stmt->execute([$id]);
-    header("Location: index.php");
+    header("Location: bilan.php");
     exit;
 }
 
-// Enregistrement d’un nouveau compte rendu
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['texte'])) {
-    $texte = trim($_POST['texte']);
-    if ($texte !== '') {
-        $stmt = $pdo->prepare("INSERT INTO bilan (texte) VALUES (?)");
-        $success = $stmt->execute([$texte]);
-        if ($success) {
-            // Redirection après insertion
-            header("Location: index.php");
-            exit; // Toujours mettre exit après header Location
-        } else {
-            echo "Erreur lors de l'insertion.";
+// Ajout d’un compte rendu
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['contenu'])) {
+    $contenu = trim($_POST['contenu']);
+    if ($contenu !== '') {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO bilan (contenu) VALUES (?)");
+            $stmt->execute([$contenu]);
+            header("Location: bilan.php");
+            exit;
+        } catch (PDOException $e) {
+            echo "❌ Erreur PDO : " . $e->getMessage();
         }
     } else {
-        echo "Le texte est vide.";
+        echo "⚠️ Le contenu est vide.";
     }
 }
 
-// Récupération des comptes rendus pour affichage
-$stmt = $pdo->query("SELECT * FROM bilan ORDER BY id DESC");
-$bilanListe = $stmt->fetchAll();
+// Récupération des comptes rendus
+try {
+    $stmt = $pdo->query("SELECT id, contenu, date_creation FROM bilan ORDER BY id DESC");
+    $bilanListe = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("❌ Erreur PDO : " . $e->getMessage());
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -50,7 +52,6 @@ $bilanListe = $stmt->fetchAll();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-
 <div class="container mt-5">
     <h1 class="mb-4">🩺 Gestion des comptes rendus</h1>
 
@@ -60,7 +61,7 @@ $bilanListe = $stmt->fetchAll();
         <div class="card-body">
             <form method="post" action="">
                 <div class="mb-3">
-                    <textarea name="texte" class="form-control" rows="4" placeholder="Écris ton compte rendu ici..."></textarea>
+                    <textarea name="contenu" class="form-control" rows="4" placeholder="Écris ton compte rendu ici..."></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Ajouter</button>
             </form>
@@ -68,20 +69,24 @@ $bilanListe = $stmt->fetchAll();
     </div>
 
     <!-- Liste des comptes rendus -->
-    <?php foreach ($bilanListe as $row): ?>
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">📝 Compte rendu #<?= htmlspecialchars($row['id']) ?></h5>
-                <p class="card-text"><?= nl2br(htmlspecialchars($row['texte'])) ?></p>
-                <a href="?supprimer=<?= urlencode($row['id']) ?>" 
-                   class="btn btn-danger" 
-                   onclick="return confirm('Supprimer ce compte rendu ?');">
-                   Supprimer
-                </a>
+    <?php if (!empty($bilanListe)): ?>
+        <?php foreach ($bilanListe as $row): ?>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">📝 Compte rendu #<?= htmlspecialchars($row['id']) ?></h5>
+                    <p class="card-text"><?= nl2br(htmlspecialchars($row['contenu'])) ?></p>
+                    <small class="text-muted">Créé le : <?= htmlspecialchars($row['date_creation']) ?></small><br><br>
+                    <a href="?supprimer=<?= urlencode($row['id']) ?>" 
+                       class="btn btn-danger" 
+                       onclick="return confirm('Supprimer ce compte rendu ?');">
+                       Supprimer
+                    </a>
+                </div>
             </div>
-        </div>
-    <?php endforeach; ?>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="text-muted">Aucun compte rendu disponible.</p>
+    <?php endif; ?>
 </div>
-
 </body>
 </html>
