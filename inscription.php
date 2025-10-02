@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 
 // Démarrer la session
 session_start();
-
 include 'includes/header.php';
 
 // Configuration de la base de données
@@ -67,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 try {
                     $hash = password_hash($mdp, PASSWORD_DEFAULT);
                     $stmt = $pdo->prepare("
-                        INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mdp) 
+                        INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mot_de_passe) 
                         VALUES (?, ?, ?, ?, ?)
                     ");
                     $stmt->execute([$nom, $prenom, $email, $numero, $hash]);

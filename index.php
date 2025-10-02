@@ -89,8 +89,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <B><center>Bienvenue sur le site du laboratoire médical
+        HEALTH NORTH
+    <center></B>
 
-<div style="max-width:600px; margin:50px auto; padding:20px; border:1px solid #ddd; border-radius:10px; text-align:center;">
+<img src="http://localhost/labo/image labo.jpg" alt="Logo du laboratoire" style="display:block; margin:20px auto; max-width:200px;">
+
 
     <?php if (isset($_SESSION['id_patient'])): ?>
         <h2>Bienvenue, <?php echo htmlspecialchars($_SESSION['utilisateur']); ?> 👋</h2>
