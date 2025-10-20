@@ -30,12 +30,12 @@ try {
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Route pour obtenir tous les spécialistes
-if ($path == '/test/api/specialiste.php/specialistes' && $method == 'GET') {
+// ✅ Route pour obtenir tous les spécialistes
+if ($path == '/aurelie-projet-labo/api/api-patient.php/specialistes' && $method == 'GET') {
     try {
         $search = isset($_GET['search']) ? $_GET['search'] : '';
         
-        if ($search) {
+        if (!empty($search)) {
             $stmt = $pdo->prepare("SELECT * FROM specialiste WHERE nom LIKE ? OR prenom LIKE ? OR specialite LIKE ? OR ville LIKE ?");
             $searchParam = "%$search%";
             $stmt->execute([$searchParam, $searchParam, $searchParam, $searchParam]);
@@ -50,8 +50,8 @@ if ($path == '/test/api/specialiste.php/specialistes' && $method == 'GET') {
     }
 }
 
-// Route pour obtenir un spécialiste spécifique
-elseif (preg_match('#^/test/api/specialiste.php/specialistes/(\d+)$#', $path, $matches) && $method == 'GET') {
+// ✅ Route pour obtenir un spécialiste spécifique
+elseif (preg_match('#^/aurelie-projet-labo/api/api-patient.php/specialistes/(\d+)$#', $path, $matches) && $method == 'GET') {
     try {
         $id = $matches[1];
         $stmt = $pdo->prepare("SELECT * FROM specialiste WHERE id = ?");
@@ -68,8 +68,10 @@ elseif (preg_match('#^/test/api/specialiste.php/specialistes/(\d+)$#', $path, $m
     }
 }
 
-// Route par défaut
+// 🚫 Route par défaut
 else {
     echo json_encode(['message' => 'Route non trouvée']);
 }
+?>
+
 ?>

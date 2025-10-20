@@ -1,5 +1,6 @@
 <?php
 header("Content-Type: application/json");
+
 $method = $_SERVER['REQUEST_METHOD'];
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -20,14 +21,14 @@ $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
-    echo json_encode(['message' => 'Erreur de connexion à la base de données: ' . $e->getMessage()]);
+    echo json_encode(['message' => 'Erreur de connexion : ' . $e->getMessage()]);
     exit;
 }
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Route pour créer un patient
-if ($path == '/test/api/patient.php/register' && $method == 'POST') {
+// ✅ Création d’un patient
+if ($path == '/aurelie-projet-labo/api/api-patient.php/register' && $method == 'POST') {
     try {
         $nom = $input['nom'];
         $prenom = $input['prenom'];
@@ -39,12 +40,12 @@ if ($path == '/test/api/patient.php/register' && $method == 'POST') {
         $stmt->execute([$nom, $prenom, $email, $mdp, $adresse]);
         echo json_encode(['message' => 'Patient créé avec succès']);
     } catch (\Exception $e) {
-        echo json_encode(['message' => 'Erreur lors de l\'enregistrement: ' . $e->getMessage()]);
+        echo json_encode(['message' => 'Erreur : ' . $e->getMessage()]);
     }
 }
 
-// Route pour la connexion d'un patient
-elseif ($path == '/test/api/patient.php/login' && $method == 'POST') {
+// ✅ Connexion d’un patient
+elseif ($path == '/aurelie-projet-labo/api/api-patient.php/login' && $method == 'POST') {
     try {
         $email = $input['email'];
         $mdp = $input['mdp'];
@@ -59,23 +60,22 @@ elseif ($path == '/test/api/patient.php/login' && $method == 'POST') {
             echo json_encode(['message' => 'Identifiants incorrects']);
         }
     } catch (\Exception $e) {
-        echo json_encode(['message' => 'Erreur lors de la connexion: ' . $e->getMessage()]);
+        echo json_encode(['message' => 'Erreur : ' . $e->getMessage()]);
     }
 }
 
-// Route pour obtenir la liste de tous les patients
-elseif ($path == '/test/api/patient.php/patients' && $method == 'GET') {
+// ✅ Liste de tous les patients
+elseif ($path == '/aurelie-projet-labo/api/api-patient.php/patients' && $method == 'GET') {
     try {
         $stmt = $pdo->query("SELECT * FROM patient");
-        $patients = $stmt->fetchAll();
-        echo json_encode($patients);
+        echo json_encode($stmt->fetchAll());
     } catch (\Exception $e) {
-        echo json_encode(['message' => 'Erreur lors de la récupération des patients: ' . $e->getMessage()]);
+        echo json_encode(['message' => 'Erreur : ' . $e->getMessage()]);
     }
 }
 
-// Route pour obtenir un patient spécifique
-elseif (preg_match('#^/test/api/patient.php/patients/(\d+)$#', $path, $matches) && $method == 'GET') {
+// ✅ Détails d’un patient
+elseif (preg_match('#^/aurelie-projet-labo/api/api-patient.php/patient/(\d+)$#', $path, $matches) && $method == 'GET') {
     try {
         $id = $matches[1];
         $stmt = $pdo->prepare("SELECT * FROM patient WHERE id = ?");
@@ -88,49 +88,47 @@ elseif (preg_match('#^/test/api/patient.php/patients/(\d+)$#', $path, $matches) 
             echo json_encode(['message' => 'Patient non trouvé']);
         }
     } catch (\Exception $e) {
-        echo json_encode(['message' => 'Erreur lors de la récupération du patient: ' . $e->getMessage()]);
+        echo json_encode(['message' => 'Erreur : ' . $e->getMessage()]);
     }
 }
 
-// Route pour mettre à jour un patient
-elseif (preg_match('#^/test/api/patient.php/patients/(\d+)$#', $path, $matches) && $method == 'PUT') {
+// ✅ Mise à jour d’un patient
+elseif (preg_match('#^/aurelie-projet-labo/api/api-patient.php/patient/(\d+)$#', $path, $matches) && $method == 'PUT') {
     try {
         $id = $matches[1];
         $nom = $input['nom'];
         $prenom = $input['prenom'];
         $email = $input['email'];
         $adresse = $input['adresse'];
-
-        // Ne pas hacher le mot de passe si ce n'est pas nécessaire
         $mdp = isset($input['mdp']) ? password_hash($input['mdp'], PASSWORD_DEFAULT) : null;
 
         if ($mdp) {
-            $stmt = $pdo->prepare("UPDATE patient SET nom = ?, prenom = ?, email = ?, mdp = ?, adresse = ? WHERE id = ?");
+            $stmt = $pdo->prepare("UPDATE patient SET nom=?, prenom=?, email=?, mdp=?, adresse=? WHERE id=?");
             $stmt->execute([$nom, $prenom, $email, $mdp, $adresse, $id]);
         } else {
-            $stmt = $pdo->prepare("UPDATE patient SET nom = ?, prenom = ?, email = ?, adresse = ? WHERE id = ?");
+            $stmt = $pdo->prepare("UPDATE patient SET nom=?, prenom=?, email=?, adresse=? WHERE id=?");
             $stmt->execute([$nom, $prenom, $email, $adresse, $id]);
         }
 
         echo json_encode(['message' => 'Patient mis à jour avec succès']);
     } catch (\Exception $e) {
-        echo json_encode(['message' => 'Erreur lors de la mise à jour du patient: ' . $e->getMessage()]);
+        echo json_encode(['message' => 'Erreur : ' . $e->getMessage()]);
     }
 }
 
-// Route pour supprimer un patient
-elseif (preg_match('#^/test/api/patient.php/patients/(\d+)$#', $path, $matches) && $method == 'DELETE') {
+// ✅ Suppression d’un patient
+elseif (preg_match('#^/aurelie-projet-labo/api/api-patient.php/patient/(\d+)$#', $path, $matches) && $method == 'DELETE') {
     try {
         $id = $matches[1];
         $stmt = $pdo->prepare("DELETE FROM patient WHERE id = ?");
         $stmt->execute([$id]);
         echo json_encode(['message' => 'Patient supprimé avec succès']);
     } catch (\Exception $e) {
-        echo json_encode(['message' => 'Erreur lors de la suppression du patient: ' . $e->getMessage()]);
+        echo json_encode(['message' => 'Erreur : ' . $e->getMessage()]);
     }
 }
 
-// Route par défaut si aucune route ne correspond
+// 🚫 Route non trouvée
 else {
     echo json_encode(['message' => 'Route non trouvée']);
 }

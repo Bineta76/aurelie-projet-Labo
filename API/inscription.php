@@ -1,153 +1,80 @@
 <?php
-// Gestion CORS pour les requêtes préliminaires
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
-// Gestion de la requête OPTIONS (pré-vol CORS)
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+$method = $_SERVER['REQUEST_METHOD'];
+
+// ✅ Réponse immédiate pour les requêtes OPTIONS (CORS)
+if ($method == 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// Configuration de la base de données
+$input = json_decode(file_get_contents('php://input'), true);
+
 $host = 'localhost';
-$dbname = 'labo';
-$username = 'root';
-$password = '';
+$db   = 'labo';
+$user = 'root';
+$pass = '';
 $charset = 'utf8mb4';
 
-// Gestion de la méthode HTTP
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Méthode non autorisée'
-    ]);
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+    echo json_encode(['message' => 'Erreur de connexion à la base de données: ' . $e->getMessage()]);
     exit;
 }
 
-try {
-    // Connexion PDO
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
-        $username,
-        $password,
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]
-    );
-    
-    // Récupération des données JSON
-    $input = file_get_contents('php://input');
-    
-    // Vérifier si des données ont été reçues
-    if (empty($input)) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Aucune donnée reçue'
-        ]);
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// ✅ Route : liste de tous les spécialistes
+if ($path == '/aurelie-projet-labo/api/api-specialiste.php/specialistes' && $method == 'GET') {
+    try {
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+
+        if (!empty($search)) {
+            $stmt = $pdo->prepare("SELECT * FROM specialiste WHERE nom LIKE ? OR prenom LIKE ? OR specialite LIKE ? OR ville LIKE ?");
+            $searchParam = "%$search%";
+            $stmt->execute([$searchParam, $searchParam, $searchParam, $searchParam]);
+        } else {
+            $stmt = $pdo->query("SELECT * FROM specialiste");
+        }
+
+        $specialistes = $stmt->fetchAll();
+        echo json_encode($specialistes);
         exit;
-    }
-    
-    $data = json_decode($input, true);
-    
-    // Vérifier si le JSON est valide
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'JSON invalide: ' . json_last_error_msg()
-        ]);
+    } catch (\Exception $e) {
+        echo json_encode(['message' => 'Erreur lors de la récupération des spécialistes: ' . $e->getMessage()]);
         exit;
-    }
-    
-    // Validation des données
-    if (empty($data['nom']) || empty($data['email'])) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Nom et email sont requis'
-        ]);
-        exit;
-    }
-    
-    $nom = trim($data['nom']);
-    $prenom = isset($data['prenom']) ? trim($data['prenom']) : '';
-    $email = trim($data['email']);
-    $numero_de_securite_sociale = isset($data['numero_de_securite_sociale']) ? trim($data['numero_de_securite_sociale']) : '';
-    
-    // Vérifier si le mot de passe est fourni
-    if (empty($data['mot_de_passe'])) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Le mot de passe est requis'
-        ]);
-        exit;
-    }
-    
-    $mot_de_passe = password_hash(trim($data['mot_de_passe']), PASSWORD_DEFAULT);
-    
-    // Validation de l'email
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Email invalide'
-        ]);
-        exit;
-    }
-    
-    // Préparation de la requête INSERT
-    $sql = "INSERT INTO patient (nom, prenom, email, numero_de_securite_sociale, mot_de_passe) 
-            VALUES (:nom, :prenom, :email, :numero_de_securite_sociale, :mot_de_passe)";
-    
-    $stmt = $pdo->prepare($sql);
-    
-    // Exécution avec les paramètres
-    $stmt->execute([
-        ':nom' => $nom,
-        ':prenom' => $prenom,
-        ':email' => $email,
-        ':numero_de_securite_sociale' => $numero_de_securite_sociale,
-        ':mot_de_passe' => $mot_de_passe
-    ]);
-    
-    // Récupération de l'ID inséré
-    $userId = $pdo->lastInsertId();
-    
-    // Réponse succès
-    http_response_code(201);
-    echo json_encode([
-        'success' => true,
-        'message' => 'Utilisateur créé avec succès',
-        'data' => [
-            'id' => (int)$userId,
-            'nom' => $nom,
-            'prenom' => $prenom,
-            'email' => $email
-        ]
-    ]);
-    
-} catch (PDOException $e) {
-    // Gestion des erreurs spécifiques
-    if ($e->getCode() == 23000) {
-        http_response_code(409);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Cet email existe déjà'
-        ]);
-    } else {
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Erreur serveur',
-            'error' => $e->getMessage()
-        ]);
     }
 }
-?>
+// ✅ Route : un spécialiste spécifique
+elseif (preg_match('#^/aurelie-projet-labo/api/api-specialiste.php/specialistes/(\d+)$#', $path, $matches) && $method == 'GET') {
+    try {
+        $id = $matches[1];
+        $stmt = $pdo->prepare("SELECT * FROM specialiste WHERE id = ?");
+        $stmt->execute([$id]);
+        $specialiste = $stmt->fetch();
+
+        if ($specialiste) {
+            echo json_encode($specialiste);
+        } else {
+            echo json_encode(['message' => 'Spécialiste non trouvé']);
+        }
+
+        exit;
+    } catch (\Exception $e) {
+        echo json_encode(['message' => 'Erreur lors de la récupération du spécialiste: ' . $e->getMessage()]);
+        exit;
+    }
+}
